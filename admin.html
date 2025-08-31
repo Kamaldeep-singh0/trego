@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trexo Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; color: #333; }
+        .login-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, #2c5aa0 0%, #f39c12 100%); }
+        .login-box { background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); width: 100%; max-width: 450px; }
+        .login-header { text-align: center; margin-bottom: 2rem; }
+        .login-header h1 { color: #2c5aa0; margin-bottom: 0.5rem; font-size: 2rem; }
+        .login-header p { color: #666; font-size: 1rem; }
+        .demo-credentials { background: #f8f9fa; padding: 1.5rem; border-radius: 10px; margin-bottom: 1.5rem; border-left: 4px solid #2c5aa0; }
+        .demo-title { font-weight: 600; color: #2c5aa0; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
+        .credential-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; padding: 8px; background: white; border-radius: 6px; }
+        .credential-label { font-weight: 600; color: #333; }
+        .credential-value { color: #666; font-family: monospace; background: #f8f9fa; padding: 4px 8px; border-radius: 4px; cursor: pointer; transition: all 0.3s ease; }
+        .credential-value:hover { background: #2c5aa0; color: white; }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: #555; }
+        .form-group input { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem; transition: border-color 0.3s ease; }
+        .form-group input:focus { outline: none; border-color: #2c5aa0; box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1); }
+        .login-btn { width: 100%; background: #2c5aa0; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .login-btn:hover { background: #1e3d6f; }
+        .login-btn:disabled { background: #999; cursor: not-allowed; }
+        .dashboard { display: none; }
+        .dashboard.active { display: block; }
+        .header { background: #2c5aa0; color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header h1 { font-size: 1.5rem; display: flex; align-items: center; gap: 10px; }
+        .user-info { display: flex; align-items: center; gap: 1rem; }
+        .user-avatar { width: 40px; height: 40px; background: #f39c12; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .logout-btn { background: #f39c12; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: background 0.3s ease; }
+        .logout-btn:hover { background: #e67e22; }
+        .nav-tabs { background: white; padding: 0 2rem; border-bottom: 1px solid #ddd; display: flex; gap: 0; }
+        .nav-tabs button { background: none; border: none; padding: 1rem 2rem; cursor: pointer; border-bottom: 3px solid transparent; font-weight: 600; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px; }
+        .nav-tabs button:hover { background: #f8f9fa; }
+        .nav-tabs button.active { border-bottom-color: #2c5aa0; color: #2c5aa0; background: #f8f9fa; }
+        .content { padding: 2rem; max-width: 1400px; margin: 0 auto; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card { background: white; padding: 1.5rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); transition: transform 0.3s ease; border-left: 4px solid #2c5aa0; }
+        .stat-card:hover { transform: translateY(-5px); }
+        .stat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .stat-title { font-size: 0.9rem; color: #666; text-transform: uppercase; font-weight: 600; letter-spacing: 1px; }
+        .stat-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; }
+        .stat-value { font-size: 2.5rem; font-weight: 900; color: #2c5aa0; margin-bottom: 0.5rem; }
+        .stat-change { font-size: 0.9rem; color: #27ae60; font-weight: 600; }
+        .stat-change.negative { color: #f39c12; }
+        .data-table { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin-bottom: 2rem; }
+        .table-header { background: linear-gradient(135deg, #2c5aa0, #1e3d6f); color: white; padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+        .table-header h3 { font-size: 1.3rem; font-weight: 700; }
+        .filters { display: flex; gap: 1rem; }
+        .filters select { padding: 8px 12px; border: 1px solid rgba(255,255,255,0.3); border-radius: 5px; background: rgba(255,255,255,0.1); color: white; font-weight: 500; }
+        .filters select option { background: #2c5aa0; color: white; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 15px 12px; text-align: left; border-bottom: 1px solid #f0f0f0; }
+        th { background: #f8f9fa; font-weight: 600; color: #333; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+        tbody tr:hover { background: #f8f9fa; }
+        .status-badge { padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .status-new { background: #e3f2fd; color: #1976d2; }
+        .status-pending { background: #fff3e0; color: #f57c00; }
+        .status-completed { background: #e8f5e8; color: #388e3c; }
+        .status-failed { background: #fff8e1; color: #f39c12; }
+        .status-in-progress { background: #f3e5f5; color: #7b1fa2; }
+        .status-closed { background: #e0e0e0; color: #424242; }
+        .action-btn { background: #2c5aa0; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; margin-right: 5px; transition: all 0.3s ease; }
+        .action-btn:hover { background: #1e3d6f; transform: translateY(-2px); }
+        .action-btn.danger { background: #f39c12; }
+        .action-btn.danger:hover { background: #e67e22; }
+        .action-btn.success { background: #27ae60; }
+        .action-btn.success:hover { background: #229954; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        /* Chat Styles */
+        .chat-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+            height: 70vh;
+        }
+
+        .chat-sidebar {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #2c5aa0, #1e3d6f);
+            color: white;
+            padding: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chat-list {
+            height: calc(100% - 60px);
+            overflow-y: auto;
+        }
+
+        .chat-item {
+            padding: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .chat-item:hover {
+            background: #f8f9fa;
+        }
+
+        .chat-item.active {
+            background: #e3f2fd;
+            border-left: 4px solid #2c5aa0;
+        }
+
+        .chat-item.unread {
+            background: #fff3e0;
+        }
+
+        .chat-item.unread::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 10px;
+            background: #f39c12;
+            border-radius: 50%;
+        }
+
+        .chat-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.3rem;
+        }
+
+        .chat-preview {
+            font-size: 0.9rem;
+            color: #666;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .chat-time {
+            font-size: 0.8rem;
+            color: #999;
+            float: right;
+        }
+
+        .chat-main {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-main-header {
+            background: linear-gradient(135deg, #2c5aa0, #1e3d6f);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chat-user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f39c12;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .chat-user-details h4 {
+            margin-bottom: 0.2rem;
+        }
+
+        .chat-user-status {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 10px;
+        }
+
+        .message.admin {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .message.client .message-avatar {
+            background: #9e9e9e;
+        }
+
+        .message.admin .message-avatar {
+            background: #2c5aa0;
+        }
+
+        .message-content {
+            flex: 1;
+            max-width: 70%;
+        }
+
+        .message-bubble {
+            padding: 0.8rem 1rem;
+            border-radius: 18px;
+            margin-bottom: 0.3rem;
+            word-wrap: break-word;
+        }
+
+        .message.client .message-bubble {
+            background: white;
+            border: 1px solid #e0e0e0;
+        }
+
+        .message.admin .message-bubble {
+            background: #2c5aa0;
+            color: white;
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            color: #999;
+            padding: 0 0.5rem;
+        }
+
+        .chat-input {
+            padding: 1rem;
+            border-top: 1px solid #e0e0e0;
+            background: white;
+        }
+
+        .input-container {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .message-input {
+            flex: 1;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            padding: 12px 20px;
+            resize: none;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+            max-height: 100px;
+        }
+
+        .message-input:focus {
+            outline: none;
+            border-color: #2c5aa0;
+        }
+
+        .send-btn {
+            background: #2c5aa0;
+            color: white;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .send-btn:hover {
+            background: #1e3d6f;
+            transform: scale(1.05);
+        }
+
+        .send-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .chat-placeholder {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            color: #666;
+            text-align: center;
+        }
+
+        .chat-placeholder i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: #ccc;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #fff8e1;
+            color: #f39c12;
+            border: 1px solid #ffe0b2;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .back-link a {
+            color: #2c5aa0;
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filters {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .nav-tabs {
+                flex-wrap: wrap;
+                padding: 0 1rem;
+            }
+
+            .nav-tabs button {
+                padding: 0.8rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .content {
+                padding: 1rem;
+            }
+
+            .table-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+
+            th, td {
+                padding: 10px 8px;
+            }
+
+            .chat-container {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+
+            .chat-sidebar {
+                max-height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-container">
+        <div class="login-box">
+            <div class="login-header">
+                <h1>🏗️ Trexo Admin</h1>
+                <p>Customer Support Dashboard</p>
+            </div>
+            <div class="demo-credentials">
+                <div class="demo-title"><i class="fas fa-key"></i> Demo Admin Credentials</div>
+                <div class="credential-item">
+                    <span class="credential-label">Admin Account:</span>
+                    <span class="credential-value" onclick="fillCredentials('admin', 'admin123')">admin / admin123</span>
+                </div>
+                <div class="credential-item">
+                    <span class="credential-label">Support Account:</span>
+                    <span class="credential-value" onclick="fillCredentials('support', 'support123')">support / support123</span>
+                </div>
+                <div style="margin-top: 1rem; font-size: 0.8rem; color: #666; text-align: center;">
+                    💡 Click on credentials to auto-fill the form
+                </div>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="login-btn">
+                    <i class="fas fa-sign-in-alt"></i> Login to Dashboard
+                </button>
+            </form>
+            <div id="loginAlert"></div>
+            <div class="back-link">
+                <a href="index.html"><i class="fas fa-arrow-left"></i> Back to Website</a>
+            </div>
+        </div>
+    </div>
+    <!-- Dashboard -->
+    <div id="dashboard" class="dashboard">
+        <header class="header">
+            <h1><i class="fas fa-tachometer-alt"></i> Trexo Admin Dashboard</h1>
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar">AD</div>
+                <span id="adminName">Admin User</span>
+                <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </header>
+        <nav class="nav-tabs">
+            <button class="nav-btn active" onclick="showTab('overview')"><i class="fas fa-chart-pie"></i> Overview</button>
+            <button class="nav-btn" onclick="showTab('transactions')"><i class="fas fa-credit-card"></i> Transactions</button>
+            <button class="nav-btn" onclick="showTab('tickets')"><i class="fas fa-ticket-alt"></i> Support Tickets</button>
+            <button class="nav-btn" onclick="showTab('chat')"><i class="fas fa-comments"></i> Live Chat <span id="chatNotification" class="hidden" style="background: #f39c12; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 0.7rem; display: inline-flex; align-items: center; justify-content: center; margin-left: 5px;">3</span></button>
+        </nav>
+        <main class="content">
+            <!-- Overview Tab -->
+            <div id="overview" class="tab-content active">
+                <div class="stats-grid" id="statsGrid"></div>
+                <div class="data-table">
+                    <div class="table-header"><h3>Recent Activity</h3></div>
+                    <div id="recentActivity"></div>
+                </div>
+            </div>
+            <!-- Transactions Tab -->
+            <div id="transactions" class="tab-content">
+                <div class="data-table">
+                    <div class="table-header">
+                        <h3>All Transactions</h3>
+                        <div class="filters">
+                            <select id="transactionStatusFilter" onchange="loadTransactions()">
+                                <option value="all">All Status</option>
+                                <option value="pending">Pending</option>
+                                <option value="completed">Completed</option>
+                                <option value="failed">Failed</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="transactionsTable"></div>
+                </div>
+            </div>
+            <!-- Support Tickets Tab -->
+            <div id="tickets" class="tab-content">
+                <div class="data-table">
+                    <div class="table-header">
+                        <h3>Support Tickets</h3>
+                        <div class="filters">
+                            <select id="ticketStatusFilter" onchange="loadTickets()">
+                                <option value="all">All Status</option>
+                                <option value="new">New</option>
+                                <option value="in-progress">In Progress</option>
+                                <option value="closed">Closed</option>
+                            </select>
+                            <select id="ticketTypeFilter" onchange="loadTickets()">
+                                <option value="all">All Types</option>
+                                <option value="contact">Contact</option>
+                                <option value="quote">Quote</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="ticketsTable"></div>
+                </div>
+            </div>
+            <!-- Live Chat Tab -->
+            <div id="chat" class="tab-content">
+                <div class="chat-container">
+                    <div class="chat-sidebar">
+                        <div class="chat-header"><i class="fas fa-comments"></i> Active Chats</div>
+                        <div class="chat-list" id="chatList"></div>
+                    </div>
+                    <div class="chat-main">
+                        <div id="chatPlaceholder" class="chat-placeholder">
+                            <i class="fas fa-comments"></i>
+                            <h3>Select a chat to start messaging</h3>
+                            <p>Choose a conversation from the sidebar to view messages</p>
+                        </div>
+                        <div id="chatWindow" class="hidden">
+                            <div class="chat-main-header">
+                                <div class="chat-user-info">
+                                    <div class="chat-user-avatar" id="currentChatAvatar">JD</div>
+                                    <div class="chat-user-details">
+                                        <h4 id="currentChatName">John Doe</h4>
+                                        <div class="chat-user-status" id="currentChatStatus">Online</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <button class="action-btn" onclick="closeChatSession()"><i class="fas fa-times"></i> End Chat</button>
+                                </div>
+                            </div>
+                            <div class="chat-messages" id="chatMessages"></div>
+                            <div class="chat-input">
+                                <div class="input-container">
+                                    <textarea id="messageInput" class="message-input" placeholder="Type your message..." rows="1" onkeypress="handleMessageKeyPress(event)"></textarea>
+                                    <button class="send-btn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script>
+        let currentAdmin = null;
+        let currentTab = 'overview';
+        let currentChatId = null;
+        let chatUpdateInterval = null;
+        const ADMIN_CREDENTIALS = {
+            'admin': { password: 'admin123', name: 'Admin User', role: 'Administrator' },
+            'support': { password: 'support123', name: 'Support Manager', role: 'Support' },
+            'manager': { password: 'manager123', name: 'Project Manager', role: 'Manager' }
+        };
+        const DEMO_DATA = {
+            totalRevenue: 2450000,
+            totalTransactions: 156,
+            pendingTransactions: 23,
+            completedTransactions: 125,
+            totalTickets: 48,
+            newTickets: 12,
+            recentTransactions: [
+                { id: 'TXN-001', amount: 45000, method: 'Bank Transfer', status: 'completed', timestamp: new Date('2024-12-20') },
+                { id: 'TXN-002', amount: 32000, method: 'Credit Card', status: 'pending', timestamp: new Date('2024-12-19') },
+                { id: 'TXN-003', amount: 78000, method: 'Check', status: 'completed', timestamp: new Date('2024-12-18') },
+                { id: 'TXN-004', amount: 25000, method: 'Bank Transfer', status: 'failed', timestamp: new Date('2024-12-17') },
+                { id: 'TXN-005', amount: 95000, method: 'Wire Transfer', status: 'completed', timestamp: new Date('2024-12-16') }
+            ],
+            recentTickets: [
+                { id: 1, type: 'quote', name: 'John Smith', status: 'new', timestamp: new Date('2024-12-20') },
+                { id: 2, type: 'contact', name: 'Sarah Johnson', status: 'in-progress', timestamp: new Date('2024-12-19') },
+                { id: 3, type: 'quote', name: 'Mike Wilson', status: 'closed', timestamp: new Date('2024-12-18') },
+                { id: 4, type: 'contact', name: 'Lisa Brown', status: 'new', timestamp: new Date('2024-12-17') },
+                { id: 5, type: 'quote', name: 'David Davis', status: 'in-progress', timestamp: new Date('2024-12-16') }
+            ],
+            allTransactions: [
+                { id: 'TXN-001', amount: 45000, method: 'Bank Transfer', status: 'completed', timestamp: new Date('2024-12-20'), customer: 'ABC Corp' },
+                { id: 'TXN-002', amount: 32000, method: 'Credit Card', status: 'pending', timestamp: new Date('2024-12-19'), customer: 'XYZ Ltd' },
+                { id: 'TXN-003', amount: 78000, method: 'Check', status: 'completed', timestamp: new Date('2024-12-18'), customer: 'Smith Enterprises' },
+                { id: 'TXN-004', amount: 25000, method: 'Bank Transfer', status: 'failed', timestamp: new Date('2024-12-17'), customer: 'Johnson Co' },
+                { id: 'TXN-005', amount: 95000, method: 'Wire Transfer', status: 'completed', timestamp: new Date('2024-12-16'), customer: 'Wilson Group' },
+                { id: 'TXN-006', amount: 56000, method: 'Credit Card', status: 'pending', timestamp: new Date('2024-12-15'), customer: 'Brown LLC' },
+                { id: 'TXN-007', amount: 67000, method: 'Bank Transfer', status: 'completed', timestamp: new Date('2024-12-14'), customer: 'Davis Inc' }
+            ],
+            allTickets: [
+                { id: 1, type: 'quote', name: 'John Smith', email: 'john@example.com', projectType: 'Residential', status: 'new', timestamp: new Date('2024-12-20'), message: 'Need quote for house renovation' },
+                { id: 2, type: 'contact', name: 'Sarah Johnson', email: 'sarah@example.com', projectType: 'Commercial', status: 'in-progress', timestamp: new Date('2024-12-19'), message: 'Interested in office building construction' },
+                { id: 3, type: 'quote', name: 'Mike Wilson', email: 'mike@example.com', projectType: 'Industrial', status: 'closed', timestamp: new Date('2024-12-18'), message: 'Warehouse construction project' },
+                { id: 4, type: 'contact', name: 'Lisa Brown', email: 'lisa@example.com', projectType: 'Residential', status: 'new', timestamp: new Date('2024-12-17'), message: 'Questions about kitchen remodeling' },
+                { id: 5, type: 'quote', name: 'David Davis', email: 'david@example.com', projectType: 'Commercial', status: 'in-progress', timestamp: new Date('2024-12-16'), message: 'Shopping center renovation quote' },
+                { id: 6, type: 'contact', name: 'Emma Garcia', email: 'emma@example.com', projectType: 'Residential', status: 'new', timestamp: new Date('2024-12-15'), message: 'Bathroom renovation inquiry' },
+                { id: 7, type: 'quote', name: 'James Martinez', email: 'james@example.com', projectType: 'Industrial', status: 'closed', timestamp: new Date('2024-12-14'), message: 'Factory extension project' }
+            ],
+            chatSessions: [
+                {
+                    id: 1,
+                    name: 'John Smith',
+                    email: 'john@example.com',
+                    status: 'online',
+                    lastMessage: 'Thank you for the quick response!',
+                    timestamp: new Date('2024-12-20T10:30:00'),
+                    unread: false,
+                    messages: [
+                        { id: 1, sender: 'client', message: 'Hi, I need help with my project quote', timestamp: new Date('2024-12-20T10:00:00') },
+                        { id: 2, sender: 'admin', message: 'Hello John! I\'d be happy to help you with your quote. What specific information do you need?', timestamp: new Date('2024-12-20T10:02:00') },
+                        { id: 3, sender: 'client', message: 'I submitted a quote request yesterday for a house renovation, but I haven\'t received a response yet.', timestamp: new Date('2024-12-20T10:05:00') },
+                        { id: 4, sender: 'admin', message: 'Let me check that for you. Can you please provide your email or reference number?', timestamp: new Date('2024-12-20T10:07:00') },
+                        { id: 5, sender: 'client', message: 'My email is john@example.com and I submitted it around 2 PM yesterday.', timestamp: new Date('2024-12-20T10:10:00') },
+                        { id: 6, sender: 'admin', message: 'Found it! I can see your renovation quote request. Our team will review it and send you a detailed quote within 24 hours.', timestamp: new Date('2024-12-20T10:15:00') },
+                        { id: 7, sender: 'client', message: 'That\'s great! Will it include material costs and timeline estimates?', timestamp: new Date('2024-12-20T10:20:00') },
+                        { id: 8, sender: 'admin', message: 'Absolutely! The quote will include a detailed breakdown of materials, labor costs, timeline, and any permits required.', timestamp: new Date('2024-12-20T10:25:00') },
+                        { id: 9, sender: 'client', message: 'Thank you for the quick response!', timestamp: new Date('2024-12-20T10:30:00') }
+                    ]
+                },
+                {
+                    id: 2,
+                    name: 'Sarah Johnson',
+                    email: 'sarah@example.com',
+                    status: 'online',
+                    lastMessage: 'Can you schedule a site visit?',
+                    timestamp: new Date('2024-12-20T09:45:00'),
+                    unread: true,
+                    messages: [
+                        { id: 1, sender: 'client', message: 'Hello, I\'m interested in commercial construction services.', timestamp: new Date('2024-12-20T09:30:00') },
+                        { id: 2, sender: 'admin', message: 'Hi Sarah! Great to hear from you. What type of commercial project are you planning?', timestamp: new Date('2024-12-20T09:32:00') },
+                        { id: 3, sender: 'client', message: 'We\'re looking to build a new office complex. About 50,000 sq ft.', timestamp: new Date('2024-12-20T09:35:00') },
+                        { id: 4, sender: 'admin', message: 'That sounds like an exciting project! Do you have the land already, or do you need assistance with site selection as well?', timestamp: new Date('2024-12-20T09:37:00') },
+                        { id: 5, sender: 'client', message: 'We have the land. It\'s in the downtown business district.', timestamp: new Date('2024-12-20T09:40:00') },
+                        { id: 6, sender: 'admin', message: 'Perfect location! We have extensive experience with downtown commercial projects. Would you like to schedule a consultation?', timestamp: new Date('2024-12-20T09:42:00') },
+                        { id: 7, sender: 'client', message: 'Yes, that would be great. Can you schedule a site visit?', timestamp: new Date('2024-12-20T09:45:00') }
+                    ]
+                },
+                {
+                    id: 3,
+                    name: 'Mike Wilson',
+                    email: 'mike@example.com',
+                    status: 'offline',
+                    lastMessage: 'Thanks for all your help!',
+                    timestamp: new Date('2024-12-19T16:20:00'),
+                    unread: false,
+                    messages: [
+                        { id: 1, sender: 'client', message: 'Hi, I have a question about my warehouse project timeline.', timestamp: new Date('2024-12-19T16:00:00') },
+                        { id: 2, sender: 'admin', message: 'Hello Mike! I\'d be happy to help. What specific aspect of the timeline are you concerned about?', timestamp: new Date('2024-12-19T16:02:00') },
+                        { id: 3, sender: 'client', message: 'The foundation work seems to be taking longer than expected.', timestamp: new Date('2024-12-19T16:05:00') },
+                        { id: 4, sender: 'admin', message: 'Let me check with the project manager. There might have been some weather delays this week.', timestamp: new Date('2024-12-19T16:07:00') },
+                        { id: 5, sender: 'admin', message: 'I\'ve confirmed that we had 2 days of delays due to rain, but we\'re back on track now. The foundation should be completed by Friday.', timestamp: new Date('2024-12-19T16:15:00') },
+                        { id: 6, sender: 'client', message: 'That\'s good to hear. Will this affect the overall completion date?', timestamp: new Date('2024-12-19T16:17:00') },
+                        { id: 7, sender: 'admin', message: 'We should be able to make up the time during the next phase. The overall timeline remains the same.', timestamp: new Date('2024-12-19T16:18:00') },
+                        { id: 8, sender: 'client', message: 'Thanks for all your help!', timestamp: new Date('2024-12-19T16:20:00') }
+                    ]
+                }
+            ]
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-fill admin credentials
+            fillCredentials('admin', 'admin123');
+            
+            document.getElementById('loginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                login();
+            });
+
+            // Auto-resize message input
+            document.getElementById('messageInput').addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+            });
+        });
+
+        // Auto-fill credentials function
+        function fillCredentials(username, password) {
+            document.getElementById('username').value = username;
+            document.getElementById('password').value = password;
+            
+            // Add visual feedback
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            
+            usernameInput.style.borderColor = '#27ae60';
+            passwordInput.style.borderColor = '#27ae60';
+            
+            setTimeout(() => {
+                usernameInput.style.borderColor = '#ddd';
+                passwordInput.style.borderColor = '#ddd';
+            }, 2000);
+        }
+
+        // Login function with demo credentials
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // Basic validation
+            if (!username || !password) {
+                showAlert('loginAlert', 'error', 'Please enter both username and password.');
+                return;
+            }
+            
+            const loginBtn = document.querySelector('.login-btn');
+            const originalText = loginBtn.innerHTML;
+            loginBtn.innerHTML = '<div class="loading"></div> Signing In...';
+            loginBtn.disabled = true;
+            
+            // Check demo credentials
+            setTimeout(() => {
+                if (ADMIN_CREDENTIALS[username] && ADMIN_CREDENTIALS[username].password === password) {
+                    const user = ADMIN_CREDENTIALS[username];
+                    currentAdmin = {
+                        username: username,
+                        name: user.name,
+                        role: user.role
+                    };
+                    
+                    showAlert('loginAlert', 'success', `Welcome ${user.name}! Loading dashboard...`);
+                    setTimeout(() => showDashboard(), 1500);
+                } else {
+                    showAlert('loginAlert', 'error', 'Invalid username or password. Please check the demo credentials above.');
+                    
+                    // Reset button
+                    loginBtn.innerHTML = originalText;
+                    loginBtn.disabled = false;
+                }
+            }, 1000); // Simulate network delay
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                currentAdmin = null;
+                showLogin();
+                showAlert('loginAlert', 'success', 'Logged out successfully!');
+                setTimeout(() => {
+                    document.getElementById('loginAlert').innerHTML = '';
+                }, 3000);
+            }
+        }
+
+        // UI Functions
+        function showLogin() {
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('dashboard').classList.remove('active');
+            
+            // Reset login form
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            document.querySelector('.login-btn').disabled = false;
+            document.querySelector('.login-btn').innerHTML = '<i class="fas fa-sign-in-alt"></i> Login to Dashboard';
+        }
+
+        function showDashboard() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('dashboard').classList.add('active');
+            document.getElementById('adminName').textContent = currentAdmin.name;
+            document.getElementById('userAvatar').textContent = currentAdmin.name.split(' ').map(n => n[0]).join('');
+            loadDashboardData();
+            updateChatNotifications();
+        }
+
+        function showTab(tabName) {
+            // Update active tab button
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Show tab content
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            
+            currentTab = tabName;
+            
+            // Load tab-specific data
+            switch(tabName) {
+                case 'overview':
+                    loadDashboardData();
+                    break;
+                case 'transactions':
+                    loadTransactions();
+                    break;
+                case 'tickets':
+                    loadTickets();
+                    break;
+                case 'chat':
+                    loadChatSessions();
+                    startChatUpdates();
+                    break;
+            }
+        }
+
+        function showAlert(containerId, type, message) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = `<div class="alert alert-${type}"><i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'}"></i>${message}</div>`;
+            
+            if (type === 'error') {
+                setTimeout(() => container.innerHTML = '', 5000);
+            }
+        }
+
+        // Data Loading Functions
+        function loadDashboardData() {
+            displayStats(DEMO_DATA);
+            displayRecentActivity(DEMO_DATA);
+        }
+
+        function displayStats(data) {
+            const statsGrid = document.getElementById('statsGrid');
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-title">Total Revenue</div>
+                            <div class="stat-value">$${data.totalRevenue.toLocaleString()}</div>
+                            <div class="stat-change">+12% this month</div>
+                        </div>
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #4caf50, #45a049);">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-title">Total Transactions</div>
+                            <div class="stat-value">${data.totalTransactions}</div>
+                            <div class="stat-change">+8% this month</div>
+                        </div>
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #2196f3, #1976d2);">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-title">Pending Transactions</div>
+                            <div class="stat-value">${data.pendingTransactions}</div>
+                            <div class="stat-change negative">+3 today</div>
+                        </div>
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #ff9800, #f57c00);">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-title">Support Tickets</div>
+                            <div class="stat-value">${data.totalTickets}</div>
+                            <div class="stat-change">-5% this week</div>
+                        </div>
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #9c27b0, #7b1fa2);">
+                            <i class="fas fa-ticket-alt"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-title">New Tickets</div>
+                            <div class="stat-value">${data.newTickets}</div>
+                            <div class="stat-change negative">+2 today</div>
+                        </div>
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #f44336, #d32f2f);">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-title">Success Rate</div>
+                            <div class="stat-value">${data.totalTransactions > 0 ? Math.round((data.completedTransactions / data.totalTransactions) * 100) : 0}%</div>
+                            <div class="stat-change">+2% this month</div>
+                        </div>
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #4caf50, #388e3c);">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function displayRecentActivity(data) {
+            const container = document.getElementById('recentActivity');
+            
+            let html = '<h4 style="padding: 1rem; color: #333; font-size: 1.1rem;">Recent Transactions</h4>';
+            html += '<table><thead><tr><th>Transaction ID</th><th>Amount</th><th>Method</th><th>Status</th><th>Date</th></tr></thead><tbody>';
+            
+            data.recentTransactions.forEach(txn => {
+                html += `
+                    <tr>
+                        <td><strong>${txn.id}</strong></td>
+                        <td><strong>$${txn.amount.toLocaleString()}</strong></td>
+                        <td>${txn.method}</td>
+                        <td><span class="status-badge status-${txn.status}">${txn.status}</span></td>
+                        <td>${txn.timestamp.toLocaleDateString()}</td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody></table>';
+            
+            html += '<h4 style="padding: 1rem; padding-bottom: 0; color: #333; font-size: 1.1rem;">Recent Support Tickets</h4>';
+            html += '<table><thead><tr><th>Ticket ID</th><th>Type</th><th>Customer</th><th>Status</th><th>Date</th></tr></thead><tbody>';
+            
+            data.recentTickets.forEach(ticket => {
+                html += `
+                    <tr>
+                        <td><strong>#${ticket.id}</strong></td>
+                        <td><span style="text-transform: capitalize;">${ticket.type}</span></td>
+                        <td>${ticket.name}</td>
+                        <td><span class="status-badge status-${ticket.status}">${ticket.status}</span></td>
+                        <td>${ticket.timestamp.toLocaleDateString()}</td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        function loadTransactions() {
+            const status = document.getElementById('transactionStatusFilter').value;
+            let filteredTransactions = DEMO_DATA.allTransactions;
+            
+            if (status !== 'all') {
+                filteredTransactions = DEMO_DATA.allTransactions.filter(txn => txn.status === status);
+            }
+            
+            displayTransactions(filteredTransactions);
+        }
+
+        function displayTransactions(transactions) {
+            const container = document.getElementById('transactionsTable');
+            
+            let html = '<table><thead><tr><th>Transaction ID</th><th>Customer</th><th>Amount</th><th>Method</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead><tbody>';
+            
+            transactions.forEach(txn => {
+                html += `
+                    <tr>
+                        <td><strong>${txn.id}</strong></td>
+                        <td>${txn.customer}</td>
+                        <td><strong>$${txn.amount.toLocaleString()}</strong></td>
+                        <td>${txn.method}</td>
+                        <td><span class="status-badge status-${txn.status}">${txn.status}</span></td>
+                        <td>${txn.timestamp.toLocaleDateString()}</td>
+                        <td>
+                            ${txn.status === 'pending' ? `
+                                <button class="action-btn success" onclick="updateTransactionStatus('${txn.id}', 'completed')">
+                                    <i class="fas fa-check"></i> Complete
+                                </button>
+                                <button class="action-btn danger" onclick="updateTransactionStatus('${txn.id}', 'failed')">
+                                    <i class="fas fa-times"></i> Fail
+                                </button>
+                            ` : '<span style="color: #999;">No actions</span>'}
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        function loadTickets() {
+            const status = document.getElementById('ticketStatusFilter').value;
+            const type = document.getElementById('ticketTypeFilter').value;
+            
+            let filteredTickets = DEMO_DATA.allTickets;
+            
+            if (status !== 'all') {
+                filteredTickets = filteredTickets.filter(ticket => ticket.status === status);
+            }
+            
+            if (type !== 'all') {
+                filteredTickets = filteredTickets.filter(ticket => ticket.type === type);
+            }
+            
+            displayTickets(filteredTickets);
+        }
+
+        function displayTickets(tickets) {
+            const container = document.getElementById('ticketsTable');
+            
+            let html = '<table><thead><tr><th>Ticket ID</th><th>Type</th><th>Customer</th><th>Email</th><th>Project Type</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead><tbody>';
+            
+            tickets.forEach(ticket => {
+                html += `
+                    <tr>
+                        <td><strong>#${ticket.id}</strong></td>
+                        <td><span style="text-transform: capitalize;">${ticket.type}</span></td>
+                        <td>${ticket.name}</td>
+                        <td>${ticket.email}</td>
+                        <td>${ticket.projectType || 'N/A'}</td>
+                        <td><span class="status-badge status-${ticket.status}">${ticket.status}</span></td>
+                        <td>${ticket.timestamp.toLocaleDateString()}</td>
+                        <td>
+                            ${ticket.status === 'new' ? `
+                                <button class="action-btn" onclick="updateTicketStatus(${ticket.id}, 'in-progress')">
+                                    <i class="fas fa-play"></i> Start
+                                </button>
+                            ` : ''}
+                            ${ticket.status === 'in-progress' ? `
+                                <button class="action-btn success" onclick="updateTicketStatus(${ticket.id}, 'closed')">
+                                    <i class="fas fa-check"></i> Close
+                                </button>
+                            ` : ''}
+                            ${ticket.status === 'closed' ? `
+                                <span style="color: #999;">Closed</span>
+                            ` : ''}
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        // Chat Functions
+        function loadChatSessions() {
+            const chatList = document.getElementById('chatList');
+            const sessions = DEMO_DATA.chatSessions;
+            
+            chatList.innerHTML = '';
+            
+            sessions.forEach(session => {
+                const chatItem = document.createElement('div');
+                chatItem.className = `chat-item ${session.unread ? 'unread' : ''}`;
+                chatItem.onclick = () => openChat(session.id);
+                
+                chatItem.innerHTML = `
+                    <div class="chat-time">${formatTime(session.timestamp)}</div>
+                    <div class="chat-name">${session.name}</div>
+                    <div class="chat-preview">${session.lastMessage}</div>
+                `;
+                
+                chatList.appendChild(chatItem);
+            });
+        }
+
+        function openChat(chatId) {
+            currentChatId = chatId;
+            const session = DEMO_DATA.chatSessions.find(s => s.id === chatId);
+            
+            if (!session) return;
+            
+            // Mark as read
+            session.unread = false;
+            updateChatNotifications();
+            
+            // Update active chat item
+            document.querySelectorAll('.chat-item').forEach(item => item.classList.remove('active'));
+            event.target.closest('.chat-item').classList.add('active');
+            
+            // Show chat window
+            document.getElementById('chatPlaceholder').style.display = 'none';
+            document.getElementById('chatWindow').classList.remove('hidden');
+            
+            // Update chat header
+            document.getElementById('currentChatName').textContent = session.name;
+            document.getElementById('currentChatAvatar').textContent = session.name.split(' ').map(n => n[0]).join('');
+            document.getElementById('currentChatStatus').textContent = session.status === 'online' ? 'Online' : 'Offline';
+            
+            // Load messages
+            displayChatMessages(session.messages);
+            
+            // Focus message input
+            document.getElementById('messageInput').focus();
+        }
+
+        function displayChatMessages(messages) {
+            const container = document.getElementById('chatMessages');
+            container.innerHTML = '';
+            
+            messages.forEach(message => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${message.sender}`;
+                
+                messageDiv.innerHTML = `
+                    <div class="message-avatar">${message.sender === 'admin' ? 'AD' : 'CL'}</div>
+                    <div class="message-content">
+                        <div class="message-bubble">${message.message}</div>
+                        <div class="message-time">${formatTime(message.timestamp)}</div>
+                    </div>
+                `;
+                
+                container.appendChild(messageDiv);
+            });
+            
+            // Scroll to bottom
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function closeChatSession() {
+            if (confirm('Are you sure you want to end this chat session?')) {
+                const session = DEMO_DATA.chatSessions.find(s => s.id === currentChatId);
+                
+                if (session) {
+                    session.status = 'offline';
+                    session.lastMessage = 'Chat session ended.';
+                    session.timestamp = new Date();
+                    
+                    // Update chat list and close chat window
+                    loadChatSessions();
+                    document.getElementById('chatWindow').classList.add('hidden');
+                    document.getElementById('chatPlaceholder').style.display = 'flex';
+                }
+            }
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            const session = DEMO_DATA.chatSessions.find(s => s.id === currentChatId);
+            
+            if (session) {
+                // Add new message to session
+                session.messages.push({
+                    id: session.messages.length + 1,
+                    sender: 'admin',
+                    message: message,
+                    timestamp: new Date()
+                });
+                
+                // Update last message and timestamp
+                session.lastMessage = message;
+                session.timestamp = new Date();
+                
+                // Refresh chat messages and clear input
+                displayChatMessages(session.messages);
+                input.value = '';
+                
+                // Scroll to bottom
+                const container = document.getElementById('chatMessages');
+                container.scrollTop = container.scrollHeight;
+            }
+        }
+
+        function handleMessageKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            const options = { hour: '2-digit', minute: '2-digit', hour12: false };
+            return date.toLocaleTimeString('en-US', options);
+        }
+
+        // Start chat updates interval
+        function startChatUpdates() {
+            if (chatUpdateInterval) clearInterval(chatUpdateInterval);
+            
+            chatUpdateInterval = setInterval(() => {
+                const session = DEMO_DATA.chatSessions.find(s => s.id === currentChatId);
+                
+                if (session) {
+                    // Simulate receiving a new message from the client
+                    const newMessage = {
+                        id: session.messages.length + 1,
+                        sender: 'client',
+                        message: 'This is a simulated response from the client.',
+                        timestamp: new Date()
+                    };
+                    
+                    session.messages.push(newMessage);
+                    session.lastMessage = newMessage.message;
+                    session.timestamp = new Date();
+                    
+                    // Refresh chat messages
+                    displayChatMessages(session.messages);
+                    
+                    // Scroll to bottom
+                    const container = document.getElementById('chatMessages');
+                    container.scrollTop = container.scrollHeight;
+                }
+            }, 5000); // Update every 5 seconds
+        }
+
+        // Stop chat updates interval
+        function stopChatUpdates() {
+            if (chatUpdateInterval) clearInterval(chatUpdateInterval);
+        }
+
+        // Initial load
+        document.addEventListener('DOMContentLoaded', () => {
+            showLogin();
+        });
+    </script>
+</body>
+</html>
+
+

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Not Found - Trexo Engineering</title>
+    <!-- Add Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2c5aa0 0%, #1a1a1a 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            text-align: center;
+            padding: 1rem; /* Add padding for mobile */
+        }
+        .error-container {
+            max-width: 600px;
+            padding: 2rem;
+            animation: fadeIn 0.8s ease-in-out; /* Add animation */
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .error-code {
+            font-size: 8rem;
+            font-weight: bold;
+            color: #f39c12;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3); /* Add shadow */
+        }
+        .error-message {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            line-height: 1.6; /* Improve readability */
+        }
+        .error-message h2 {
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+        .back-btn {
+            background: #f39c12;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex; /* Changed to inline-flex for icon alignment */
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease; /* Enhanced transition */
+            box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+        }
+        .back-btn:hover {
+            background: #e67e22;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(243, 156, 18, 0.4);
+        }
+        
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .error-code {
+                font-size: 6rem;
+            }
+            .error-message {
+                font-size: 1.2rem;
+            }
+            .error-message h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-code">404</div>
+        <div class="error-message">
+            <h2>Page Not Found</h2>
+            <p>The page you're looking for doesn't exist or has been moved.</p>
+        </div>
+        <a href="/" class="back-btn">
+            <i class="fas fa-home"></i> Back to Home
+        </a>
+    </div>
+</body>
+</html>

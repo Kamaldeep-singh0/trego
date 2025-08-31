@@ -1,0 +1,3907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trexo Engineering & Construction</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        /* ===== CSS VARIABLES ===== */
+        :root {
+            --primary-color: #2c5aa0;
+            --secondary-color: #1a1a1a;
+            --accent-color: #f39c12;
+            --success-color: #27ae60;
+            --danger-color: #e74c3c;
+            --light-bg: #f8f9fa;
+            --text-dark: #2c3e50;
+            --text-light: #7f8c8d;
+            --white: #ffffff;
+            --shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+                /* Add this to your CSS: */
+        .modal.show {
+            display: flex !important;
+            opacity: 1;
+        }
+
+        /* ===== RESET & BASE STYLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            scroll-behavior: smooth;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* ===== TYPOGRAPHY ===== */
+        .section-title {
+            text-align: center;
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 4rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* ===== LANGUAGE SELECTOR ===== */
+        .language-selector {
+            position: fixed;
+            top: 80px;
+            left: 20px;
+            z-index: 1001;
+            background: var(--white);
+            border-radius: 25px;
+            padding: 8px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .language-selector:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .language-selector select {
+            border: none;
+            background: transparent;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary-color);
+            outline: none;
+        }
+
+        .language-selector select:hover {
+            background: var(--light-bg);
+        }
+
+        /* ===== HEADER & NAVIGATION ===== */
+        header {
+            background: var(--white);
+            color: var(--text-dark);
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+        }
+
+
+                /* Contact Action Buttons */
+        .contact-actions {
+            margin-top: 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-direction: column;
+        }
+        
+        .contact-action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .contact-action-btn.primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .contact-action-btn.primary:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        
+        .contact-action-btn.secondary {
+            background: var(--accent-color);
+            color: white;
+        }
+        
+        .contact-action-btn.secondary:hover {
+            background: #e67e22;
+            transform: translateY(-2px);
+        }
+        
+        /* Improved Payment Grid for 4 items */
+        .payment-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        /* Contact form improvements */
+        .contact-content {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+        
+        @media (max-width: 768px) {
+            .contact-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .contact-actions {
+                flex-direction: row;
+            }
+            
+            .payment-options {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 1.5rem;
+            }
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: 0;
+            position: relative;
+            z-index: 1002;
+        }
+
+        .logo i {
+            color: var(--accent-color);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+            margin-right: 0;
+        }
+
+        .nav-links a {
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* ===== BUTTONS ===== */
+        .quote-btn {
+            background: var(--primary-color);
+            color: var(--white);
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(44, 90, 160, 0.3);
+            cursor: pointer;
+        }
+
+        .quote-btn:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(44, 90, 160, 0.4);
+        }
+
+        .login-btn {
+            background: var(--accent-color);
+            color: var(--white);
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .login-btn:hover {
+            background: #e67e22;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(243, 156, 18, 0.4);
+        }
+
+                /* Add this to your index.html styles: */
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+        }
+        
+        .logout-btn {
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .logout-btn:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+        
+        .logout-section {
+            margin-bottom: 2rem;
+        }
+
+
+
+
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--accent-color);
+            color: var(--white);
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+            border: none;
+            cursor: pointer;
+        }
+
+        .cta-button:hover {
+            background: #e67e22;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(243, 156, 18, 0.4);
+        }
+
+        .cta-secondary {
+            background: transparent;
+            border: 2px solid var(--white);
+            color: var(--white);
+            box-shadow: none;
+        }
+
+        .cta-secondary:hover {
+            background: var(--white);
+            color: var(--primary-color);
+        }
+
+        .video-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .video-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: var(--white);
+        }
+
+                .video-modal-content {
+            background: var(--white);
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            transform: scale(0.7);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal[style*="flex"] .video-modal-content {
+            transform: scale(1);
+        }
+        
+        .video-container {
+            position: relative;
+            background: var(--secondary-color);
+        }
+        
+        .video-container video {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+        }
+
+        .submit-btn {
+            background: var(--primary-color);
+            color: var(--white);
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .submit-btn:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .download-btn {
+            background: var(--accent-color);
+            color: var(--white);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .download-btn:hover {
+            background: #e67e22;
+            transform: translateY(-2px);
+        }
+
+        /* ===== HERO SECTION ===== */
+        .hero {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: var(--white);
+            position: relative;
+            overflow: hidden;
+            padding-top: 80px;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/>');
+            opacity: 0.3;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 1s ease;
+        }
+
+        .hero-content p {
+            font-size: 1.3rem;
+            margin-bottom: 2.5rem;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease 0.3s both;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 1s ease 0.6s both;
+        }
+
+        /* ===== STATS SECTION ===== */
+        .stats {
+            background: var(--white);
+            padding: 4rem 0;
+            margin-top: -50px;
+            position: relative;
+            z-index: 3;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            background: var(--white);
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+
+                /* Enhanced Form Styles */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .checkbox-group {
+            margin: 1.5rem 0;
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .checkbox-label input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+        
+        .checkmark {
+            position: relative;
+        }
+        
+        /* Service Card Enhancements */
+        .service-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+        
+        .feature-tag {
+            background: var(--light-bg);
+            color: var(--primary-color);
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .service-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: auto;
+        }
+        
+        .service-btn:hover {
+            background: var(--accent-color);
+            transform: translateX(5px);
+        }
+        
+        /* Certificate Card Enhancements */
+        .cert-year {
+            background: var(--accent-color);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin: 10px 0;
+        }
+        
+        .cert-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .cert-btn:hover {
+            background: var(--accent-color);
+        }
+        
+        /* Project Card Enhancements */
+        .project-filters {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            background: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .project-image {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .project-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(44, 90, 160, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .project-card:hover .project-overlay {
+            opacity: 1;
+        }
+        
+        .view-project-btn {
+            background: white;
+            color: var(--primary-color);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .project-meta {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+            flex-wrap: wrap;
+        }
+        
+        .project-category {
+            background: var(--primary-color);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+        
+        .project-value {
+            background: var(--success-color);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+        
+        .project-year {
+            background: var(--accent-color);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+        
+        .project-stats {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .project-stats .stat {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+        
+        /* Payment Card Enhancements */
+        .payment-features {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin: 15px 0;
+        }
+        
+        .payment-features .feature {
+            font-size: 0.9rem;
+            color: var(--success-color);
+        }
+        
+        .payment-select-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: auto;
+        }
+        
+        .payment-select-btn:hover {
+            background: var(--accent-color);
+            transform: translateY(-2px);
+        }
+        
+        .payment-security {
+            background: var(--light-bg);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            margin-top: 3rem;
+        }
+        
+        .security-badges {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .badge {
+            background: var(--success-color);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        /* Rating Stars */
+        .rating {
+            display: flex;
+            gap: 2px;
+            margin-top: 8px;
+        }
+        
+        .rating i {
+            color: var(--accent-color);
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .project-filters {
+                gap: 0.5rem;
+            }
+            
+            .filter-btn {
+                padding: 8px 16px;
+                font-size: 0.9rem;
+            }
+            
+            .project-meta {
+                justify-content: center;
+            }
+            
+            .security-badges {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            margin-top: 0.5rem;
+        }
+
+        /* ===== SERVICES SECTION ===== */
+        .services {
+            padding: 6rem 0;
+            background: var(--light-bg);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .service-card {
+            background: var(--white);
+            padding: 3rem 2rem;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .service-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2rem;
+            color: var(--white);
+        }
+
+        .service-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .service-card p {
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+
+        /* ===== ABOUT SECTION ===== */
+        .about {
+            padding: 6rem 0;
+            background: var(--white);
+        }
+
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .about-text h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--text-dark);
+        }
+
+        .about-text p {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+            color: var(--text-light);
+        }
+
+        .about-features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+        }
+
+        .feature-item i {
+            color: var(--success-color);
+            font-size: 1.2rem;
+        }
+
+        .about-image {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            height: 500px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* ===== TESTIMONIALS SECTION ===== */
+        .testimonials {
+            padding: 6rem 0;
+            background: var(--white);
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .testimonial-card {
+            background: var(--light-bg);
+            padding: 2rem;
+            border-radius: 15px;
+            position: relative;
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+        }
+
+        .testimonial-card::before {
+            content: '"';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            font-size: 4rem;
+            color: var(--primary-color);
+            font-family: serif;
+        }
+
+        .testimonial-content {
+            margin-bottom: 1.5rem;
+            font-style: italic;
+            line-height: 1.6;
+            color: var(--text-dark);
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .author-photo {
+            width: 50px;
+            height: 50px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 1.2rem;
+        }
+
+        .author-info h4 {
+            margin: 0;
+            color: var(--text-dark);
+        }
+
+        .author-info p {
+            margin: 0;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        /* ===== COMPANY OVERVIEW SECTION ===== */
+        .company-overview {
+            padding: 6rem 0;
+            background: var(--light-bg);
+        }
+
+        .overview-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            margin-top: 3rem;
+        }
+
+        .video-section {
+            position: relative;
+        }
+
+        .video-preview {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            height: 350px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .video-preview:hover {
+            transform: scale(1.02);
+        }
+
+        .video-thumbnail {
+            text-align: center;
+            color: var(--white);
+        }
+
+        .video-thumbnail i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .video-preview:hover .video-thumbnail i {
+            transform: scale(1.1);
+        }
+
+        .video-thumbnail h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .overview-info h3 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-dark);
+        }
+
+                /* Video Modal Styles */
+        .video-modal-content {
+            background: var(--white);
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            transform: scale(0.7);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal[style*="flex"] .video-modal-content {
+            transform: scale(1);
+        }
+        
+        .video-container {
+            position: relative;
+            background: var(--secondary-color);
+        }
+        
+        .video-container video {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+        }
+
+        .overview-info p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+        }
+
+        .overview-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .overview-stat {
+            text-align: center;
+            padding: 1.5rem;
+            background: var(--white);
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .overview-stat .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .overview-stat .stat-label {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        /* ===== ORGANIZATION STRUCTURE SECTION ===== */
+        .organization {
+            padding: 6rem 0;
+            background: var(--white);
+        }
+
+        .org-chart {
+            margin-top: 3rem;
+        }
+
+        .org-level {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .org-member {
+            background: var(--light-bg);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            min-width: 200px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .org-member:hover {
+            background: var(--white);
+            border-color: var(--primary-color);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+        }
+
+        .org-member.ceo {
+            background: var(--primary-color);
+            color: var(--white);
+            transform: scale(1.1);
+        }
+
+        .org-member.ceo:hover {
+            background: var(--secondary-color);
+        }
+
+        .member-photo {
+            width: 80px;
+            height: 80px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 2rem;
+            color: var(--white);
+        }
+
+        .org-member.ceo .member-photo {
+            background: var(--accent-color);
+        }
+
+        .member-info h4 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .org-member.ceo .member-info h4 {
+            color: var(--white);
+        }
+
+        .member-info p {
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .org-member.ceo .member-info p {
+            color: var(--white);
+            opacity: 0.9;
+        }
+
+        .experience {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            opacity: 0.8;
+        }
+
+        .org-member.ceo .experience {
+            color: var(--white);
+        }
+
+        .departments {
+            border-top: 2px solid var(--primary-color);
+            padding-top: 2rem;
+        }
+
+        .department {
+            background: var(--light-bg);
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            min-width: 180px;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .department h4 {
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .department p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        /* ===== CERTIFICATES & PROJECTS ===== */
+        .certificates {
+            padding: 6rem 0;
+            background: var(--light-bg);
+        }
+
+        .certificates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .certificate-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .certificate-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        .certificate-image {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2rem;
+            color: var(--white);
+        }
+
+        .certificate-info h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .certificate-info p {
+            color: var(--text-light);
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .projects {
+            padding: 6rem 0;
+            background: var(--white);
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .project-card {
+            background: var(--light-bg);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        .project-image {
+            height: 200px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            color: var(--white);
+            font-size: 3rem;
+        }
+
+        .project-info h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .project-info p {
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* ===== LOCATION SECTION ===== */
+        .location {
+            padding: 6rem 0;
+            background: var(--white);
+        }
+
+        .location-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            margin-top: 3rem;
+        }
+
+        .location-info h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--text-dark);
+        }
+
+        .location-info p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+        }
+
+        .location-details {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .location-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .location-item i {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            margin-top: 5px;
+        }
+
+        .location-item strong {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .location-item p {
+            color: var(--text-light);
+            margin: 0;
+        }
+
+        .map-container {
+            height: 400px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .map-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* ===== PAYMENT SECTION ===== */
+        .payment {
+            padding: 6rem 0;
+            background: var(--light-bg);
+        }
+
+        .payment-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .payment-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .payment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        .payment-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 2rem;
+            color: var(--white);
+        }
+
+        .payment-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .payment-card p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        /* ===== CONTACT SECTION ===== */
+        .contact {
+            padding: 6rem 0;
+            background: var(--light-bg);
+        }
+
+        .contact-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            margin-top: 3rem;
+        }
+
+        .contact-form {
+            background: var(--white);
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+        }
+
+        .contact-info {
+            background: var(--white);
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+        }
+
+        .contact-info h3 {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            color: var(--text-dark);
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 2rem;
+        }
+
+        .contact-item i {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            margin-top: 5px;
+        }
+
+        .contact-item strong {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .contact-item p {
+            color: var(--text-light);
+            margin: 0;
+        }
+
+        /* ===== FORM STYLES ===== */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        /* ===== MODAL STYLES ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--white);
+            margin: auto;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            transform: scale(0.7);
+            transition: transform 0.3s ease;
+        }
+
+        .modal:target,
+        .modal[style*="flex"] {
+            opacity: 1;
+        }
+
+        .modal:target .modal-content,
+        .modal[style*="flex"] .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            background: var(--primary-color);
+            color: var(--white);
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--white);
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-content form {
+            padding: 2rem;
+        }
+
+        .video-modal-content {
+            background: var(--white);
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%;
+            background: var(--secondary-color);
+        }
+
+        .video-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* ===== CHAT WIDGET - FIXED ===== */
+        .chat-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1500;
+        }
+
+        .chat-button {
+            width: 60px;
+            height: 60px;
+            background: var(--primary-color);
+            color: var(--white);
+            border: none;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(44, 90, 160, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chat-button:hover {
+            background: var(--accent-color);
+            transform: scale(1.1);
+        }
+
+        .chat-window {
+            display: none;
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 350px;
+            height: 500px;
+            background: var(--white);
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 1600;
+        }
+
+        .chat-window.active {
+            display: flex;
+        }
+
+        .chat-header {
+            background: var(--primary-color);
+            color: var(--white);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-header h4 {
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .chat-status {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .chat-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 3px;
+            transition: background 0.3s;
+        }
+
+        .chat-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            background: var(--light-bg);
+            max-height: 350px;
+        }
+
+        .chat-message {
+            margin-bottom: 1rem;
+            padding: 0.8rem 1rem;
+            border-radius: 15px;
+            max-width: 80%;
+            word-wrap: break-word;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .chat-message.bot {
+            background: var(--white);
+            margin-right: auto;
+            border-bottom-left-radius: 5px;
+            border: 1px solid #e1e5e9;
+        }
+
+        .chat-message.user {
+            background: var(--primary-color);
+            color: var(--white);
+            margin-left: auto;
+            border-bottom-right-radius: 5px;
+        }
+
+        .chat-input-container {
+            display: flex;
+            padding: 1rem;
+            background: var(--white);
+            border-top: 1px solid #e1e5e9;
+            gap: 10px;
+        }
+
+        .chat-input-container input {
+            flex: 1;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            outline: none;
+            font-size: 0.9rem;
+        }
+
+        .chat-input-container input:focus {
+            border-color: var(--primary-color);
+        }
+
+        .chat-send-btn {
+            background: var(--primary-color);
+            color: var(--white);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s ease;
+        }
+
+        .chat-send-btn:hover {
+            background: var(--accent-color);
+        }
+
+        /* Typing indicator animation */
+        .typing-indicator {
+            background: var(--white) !important;
+            border: 1px solid #e1e5e9 !important;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .typing-indicator .dots {
+            animation: typing 1.5s infinite;
+        }
+
+        @keyframes typing {
+            0%, 60% { opacity: 0; }
+            30% { opacity: 1; }
+        }
+
+        /* Mobile responsiveness for chat */
+        @media (max-width: 480px) {
+            .chat-window {
+                width: calc(100vw - 40px);
+                right: 20px;
+                height: 400px;
+                bottom: 90px;
+            }
+            
+            .chat-widget {
+                bottom: 20px;
+                right: 20px;
+            }
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: var(--secondary-color);
+            color: var(--white);
+            padding: 4rem 0 2rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--accent-color);
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section ul li a {
+            color: #ccc;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section ul li a:hover {
+            color: var(--accent-color);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 1rem;
+        }
+
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-color);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            background: var(--accent-color);
+            transform: translateY(-3px);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid #333;
+            color: #ccc;
+        }
+
+        /* ===== PAYMENT STYLES ===== */
+        .crypto-wallets {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .crypto-wallets ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .wallet-item {
+            background: #f8f9fa;
+            margin: 1rem 0;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #e1e5e9;
+        }
+
+        .wallet-address {
+            background: #2c5aa0;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            display: inline-block;
+            cursor: pointer;
+            word-break: break-all;
+            margin: 8px 0;
+        }
+
+        .wallet-address:hover {
+            background: #f39c12;
+        }
+
+        .copy-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 8px;
+            font-size: 0.8rem;
+        }
+
+        .copy-btn:hover {
+            background: #219a52;
+        }
+
+        .crypto-modal .modal-content {
+            max-width: 600px;
+        }
+
+        /* ===== ENHANCED ALERT SYSTEM ===== */
+        .alert {
+            position: relative;
+            padding: 15px 50px 15px 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            display: none;
+            animation: slideInAlert 0.3s ease;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            min-width: 300px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            animation: slideInAlert 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .notification-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .notification-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .notification-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .notification-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        @keyframes slideInAlert {
+            from { 
+                transform: translateX(100%); 
+                opacity: 0; 
+            }
+            to { 
+                transform: translateX(0); 
+                opacity: 1; 
+            }
+        }
+
+        .notification-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0.7;
+            padding: 4px;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .notification-close:hover {
+            opacity: 1;
+            background: rgba(0,0,0,0.1);
+        }
+
+        /* ===== USER INFO DISPLAY ===== */
+        .user-info-display {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(44, 90, 160, 0.1);
+            padding: 8px 15px;
+            border-radius: 25px;
+        }
+
+        .user-avatar-small {
+            width: 32px;
+            height: 32px;
+            background: #2c5aa0;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .user-welcome {
+            font-size: 0.9rem;
+            color: #2c5aa0;
+            font-weight: 500;
+        }
+
+        .dashboard-link {
+            background: #2c5aa0;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            text-decoration: none;
+            font-size: 0.8rem;
+            transition: background 0.3s;
+        }
+
+        .dashboard-link:hover {
+            background: #f39c12;
+            color: white;
+        }
+
+        .logout-btn-small {
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logout-btn-small:hover {
+            background: #c82333;
+        }
+
+        /* ===== ENHANCED LOADING STATES ===== */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #2c5aa0;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .btn-loading {
+            position: relative;
+            color: transparent !important;
+        }
+
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            top: 50%;
+            left: 50%;
+            margin-left: -8px;
+            margin-top: -8px;
+            border: 2px solid transparent;
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* ===== SEARCH FUNCTIONALITY ===== */
+        .search-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .search-input {
+            padding: 10px 40px 10px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            width: 250px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1);
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-btn:hover {
+            background: var(--accent-color);
+        }
+
+        /* ===== ENHANCED MODAL ANIMATIONS ===== */
+        .modal {
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        .modal.closing {
+            animation: modalFadeOut 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                backdrop-filter: blur(0px);
+            }
+            to {
+                opacity: 1;
+                backdrop-filter: blur(5px);
+            }
+        }
+
+        @keyframes modalFadeOut {
+            from {
+                opacity: 1;
+                backdrop-filter: blur(5px);
+            }
+            to {
+                opacity: 0;
+                backdrop-filter: blur(0px);
+            }
+        }
+
+        .modal-content {
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        .modal.closing .modal-content {
+            animation: modalSlideOut 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: scale(0.7) translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes modalSlideOut {
+            from {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+            to {
+                transform: scale(0.7) translateY(-50px);
+                opacity: 0;
+            }
+        }
+
+
+        
+
+        /* ===== TOOLTIP SYSTEM ===== */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: var(--secondary-color);
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px 12px;
+            position: absolute;
+            z-index: 1001;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.8rem;
+            font-weight: normal;
+        }
+
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: var(--secondary-color) transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* ===== ENHANCED FORM VALIDATION ===== */
+        .form-group.error input,
+        .form-group.error select,
+        .form-group.error textarea {
+            border-color: var(--danger-color);
+            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+        }
+
+        .form-group.success input,
+        .form-group.success select,
+        .form-group.success textarea {
+            border-color: var(--success-color);
+            box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.1);
+        }
+
+        .form-error {
+            color: var(--danger-color);
+            font-size: 0.8rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .form-group.error .form-error {
+            display: block;
+        }
+
+        .form-success {
+            color: var(--success-color);
+            font-size: 0.8rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .form-group.success .form-success {
+            display: block;
+        }
+
+        /* ===== PROGRESS INDICATORS ===== */
+        .progress-container {
+            width: 100%;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .progress-text {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-top: 5px;
+        }
+
+        /* ===== CARD HOVER EFFECTS ===== */
+        .hover-lift {
+            transition: all 0.3s ease;
+        }
+
+        .hover-lift:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        /* ===== SCROLL TO TOP BUTTON ===== */
+        .scroll-to-top {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: var(--primary-color);
+            color: var(--white);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            z-index: 1400;
+        }
+
+        .scroll-to-top:hover {
+            background: var(--accent-color);
+            transform: translateY(-3px);
+        }
+
+        .scroll-to-top.show {
+            display: flex;
+        }
+
+        /* ===== ENHANCED MOBILE RESPONSIVENESS ===== */
+        @media (max-width: 480px) {
+            .notification {
+                width: calc(100vw - 40px);
+                right: 20px;
+                min-width: unset;
+            }
+            
+            .search-input {
+                width: 200px;
+            }
+            
+            .modal-content {
+                margin: 20px;
+                width: calc(100% - 40px);
+            }
+            
+            .tooltip .tooltiptext {
+                width: 150px;
+                margin-left: -75px;
+            }
+        }
+
+        /* ===== ACCESSIBILITY IMPROVEMENTS ===== */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .focus-visible {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        /* High contrast mode */
+        @media (prefers-contrast: high) {
+            .chat-message.bot {
+                border: 2px solid var(--text-dark);
+            }
+            
+            .chat-message.user {
+                border: 2px solid var(--white);
+            }
+        }
+
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Selector -->
+    <div class="language-selector">
+        <select id="languageSelect">
+            <option value="en">🇺🇸 English</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="de">🇩🇪 Deutsch</option>
+            <option value="zh">🇨🇳 中文</option>
+            <option value="ar">🇸🇦 العربية</option>
+            <option value="pt">🇧🇷 Português</option>
+            <option value="ru">🇷🇺 Русский</option>
+        </select>
+    </div>
+
+    <header>
+        <nav class="container">
+            <div class="logo">
+                <i class="fas fa-hard-hat"></i>
+                <span data-translate="company_name">TREXO</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home" data-translate="nav_home">Home</a></li>
+                <li><a href="#services" data-translate="nav_services">Services</a></li>
+                <li><a href="#about" data-translate="nav_about">About</a></li>
+                <li><a href="#certificates" data-translate="nav_certificates">Certificates</a></li>
+                <li><a href="#projects" data-translate="nav_projects">Projects</a></li>
+                <li><a href="#location" data-translate="nav_location">Location</a></li>
+                <li><a href="#contact" data-translate="nav_contact">Contact</a></li>
+                <li><button onclick="openQuoteModal()" class="quote-btn" data-translate="get_quote">Get Quote</button></li>
+                <li><a href="login.html" class="login-btn" data-translate="login">Login</a></li>
+                <li><a href="signup.html" class="signup-btn" data-translate="signup">Sign Up</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section id="home" class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 data-translate="hero_title">Building Tomorrow, Today</h1>
+                <p data-translate="hero_subtitle">Your trusted partner for innovative engineering solutions and top-quality construction services worldwide</p>
+                <div class="hero-buttons">
+                    <a href="#contact" class="cta-button">
+                        <i class="fas fa-rocket"></i>
+                        <span data-translate="get_started">Get Started</span>
+                    </a>
+                    <a href="#projects" class="cta-button cta-secondary">
+                        <i class="fas fa-eye"></i>
+                        <span data-translate="view_projects">View Projects</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-number" data-count="250">250</span>
+                    <div class="stat-label" data-translate="projects_completed">Projects Completed</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" data-count="15">15</span>
+                    <div class="stat-label" data-translate="years_experience">Years Experience</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" data-count="500">500</span>
+                    <div class="stat-label" data-translate="happy_clients">Happy Clients</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" data-count="50">50</span>
+                    <div class="stat-label" data-translate="team_members">Team Members</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+        <!-- Enhanced Services Section -->
+    <section id="services" class="services">
+        <div class="container">
+            <h2 class="section-title" data-translate="our_services">Our Services</h2>
+            <p class="section-subtitle" data-translate="services_subtitle">Comprehensive construction and engineering solutions</p>
+            
+            <div class="services-grid">
+                <div class="service-card hover-lift" onclick="showServiceDetails('residential')">
+                    <div class="service-icon">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <h3 data-translate="residential_construction">Residential Construction</h3>
+                    <p data-translate="residential_desc">Custom homes, renovations, and residential developments built to the highest standards.</p>
+                    <div class="service-features">
+                        <span class="feature-tag">Custom Design</span>
+                        <span class="feature-tag">Energy Efficient</span>
+                        <span class="feature-tag">Smart Home Ready</span>
+                    </div>
+                    <button class="service-btn">Learn More <i class="fas fa-arrow-right"></i></button>
+                </div>
+    
+                <div class="service-card hover-lift" onclick="showServiceDetails('commercial')">
+                    <div class="service-icon">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <h3 data-translate="commercial_construction">Commercial Construction</h3>
+                    <p data-translate="commercial_desc">Office buildings, retail spaces, and commercial facilities designed for success.</p>
+                    <div class="service-features">
+                        <span class="feature-tag">Modern Design</span>
+                        <span class="feature-tag">Cost Effective</span>
+                        <span class="feature-tag">Fast Delivery</span>
+                    </div>
+                    <button class="service-btn">Learn More <i class="fas fa-arrow-right"></i></button>
+                </div>
+    
+                <div class="service-card hover-lift" onclick="showServiceDetails('infrastructure')">
+                    <div class="service-icon">
+                        <i class="fas fa-road"></i>
+                    </div>
+                    <h3 data-translate="infrastructure_development">Infrastructure Development</h3>
+                    <p data-translate="infrastructure_desc">Roads, bridges, utilities, and public infrastructure projects.</p>
+                    <div class="service-features">
+                        <span class="feature-tag">Public Works</span>
+                        <span class="feature-tag">Sustainable</span>
+                        <span class="feature-tag">Long-lasting</span>
+                    </div>
+                    <button class="service-btn">Learn More <i class="fas fa-arrow-right"></i></button>
+                </div>
+    
+                <div class="service-card hover-lift" onclick="showServiceDetails('engineering')">
+                    <div class="service-icon">
+                        <i class="fas fa-drafting-compass"></i>
+                    </div>
+                    <h3 data-translate="engineering_consulting">Engineering Consulting</h3>
+                    <p data-translate="engineering_desc">Professional engineering consultation and design services.</p>
+                    <div class="service-features">
+                        <span class="feature-tag">Expert Analysis</span>
+                        <span class="feature-tag">3D Modeling</span>
+                        <span class="feature-tag">Code Compliance</span>
+                    </div>
+                </div>
+    
+                <div class="service-card hover-lift" onclick="showServiceDetails('industrial')">
+                    <div class="service-icon">
+                        <i class="fas fa-industry"></i>
+                    </div>
+                    <h3 data-translate="industrial_construction">Industrial Construction</h3>
+                    <p data-translate="industrial_desc">Manufacturing facilities, warehouses, and industrial complexes.</p>
+                    <div class="service-features">
+                        <span class="feature-tag">Heavy Duty</span>
+                        <span class="feature-tag">Safety First</span>
+                        <span class="feature-tag">Scalable</span>
+                    </div>
+                    <button class="service-btn">Learn More <i class="fas fa-arrow-right"></i></button>
+                </div>
+    
+                <div class="service-card hover-lift" onclick="showServiceDetails('renovation')">
+                    <div class="service-icon">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <h3 data-translate="renovation_remodeling">Renovation & Remodeling</h3>
+                    <p data-translate="renovation_desc">Transform existing spaces with modern design and functionality.</p>
+                    <div class="service-features">
+                        <span class="feature-tag">Modernization</span>
+                        <span class="feature-tag">Value Added</span>
+                        <span class="feature-tag">Minimal Disruption</span>
+                    </div>
+                    <button class="service-btn">Learn More <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="about">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2 data-translate="about_trexo">About Trexo</h2>
+                    <p data-translate="about_description1">Trexo Engineering & Construction Company is your trusted partner for innovative engineering solutions and top-quality construction services. Specializing in infrastructure development, commercial, and residential projects, we deliver excellence from concept to completion.</p>
+                    <p data-translate="about_description2">With a commitment to safety, sustainability, and client satisfaction, we build the future with precision and care. Our team of expert engineers and construction professionals brings decades of combined experience to every project.</p>
+                    
+                    <div class="about-features">
+                        <div class="feature-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span data-translate="feature_licensed">Licensed & Insured</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span data-translate="feature_certified">ISO Certified</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span data-translate="feature_support">24/7 Support</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span data-translate="feature_warranty">Quality Warranty</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-image">
+                    <i class="fas fa-users" style="font-size: 4rem;"></i>
+                    <div style="margin-left: 20px;">
+                        <div data-translate="professional_team">Professional Team</div>
+                        <div style="font-size: 1rem; opacity: 0.8;" data-translate="expert_engineers">Expert Engineers & Builders</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+   <!-- Enhanced Testimonials Section -->
+<section id="testimonials" class="testimonials">
+    <div class="container">
+        <h2 class="section-title" data-translate="testimonials">What Our Clients Say</h2>
+        <p class="section-subtitle" data-translate="testimonials_subtitle">Real feedback from our satisfied clients worldwide</p>
+        
+        <div class="testimonials-grid">
+            <div class="testimonial-card hover-lift">
+                <div class="testimonial-content">
+                    "Trexo delivered our office complex ahead of schedule and under budget. Their attention to detail and professional approach made the entire process seamless."
+                </div>
+                <div class="testimonial-author">
+                    <div class="author-photo">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="author-info">
+                        <h4>John Martinez</h4>
+                        <p>CEO, TechCorp Solutions</p>
+                        <div class="rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="testimonial-card hover-lift">
+                <div class="testimonial-content">
+                    "Outstanding engineering consultation and flawless execution. They transformed our outdated facility into a modern, efficient workspace."
+                </div>
+                <div class="testimonial-author">
+                    <div class="author-photo">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="author-info">
+                        <h4>Sarah Williams</h4>
+                        <p>Operations Director, Manufacturing Inc.</p>
+                        <div class="rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="testimonial-card hover-lift">
+                <div class="testimonial-content">
+                    "From design to completion, Trexo's team demonstrated exceptional expertise in residential construction. Our dream home became reality!"
+                </div>
+                <div class="testimonial-author">
+                    <div class="author-photo">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="author-info">
+                        <h4>Michael & Lisa Chen</h4>
+                        <p>Homeowners</p>
+                        <div class="rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Replace the entire Company Overview section (around line 1200) with this: -->
+
+    <!-- Company Overview Video Section -->
+    <section id="company-overview" class="company-overview">
+        <div class="container">
+            <h2 class="section-title" data-translate="company_overview">Company Overview</h2>
+            <p class="section-subtitle" data-translate="overview_subtitle">Learn more about our company, mission, and values</p>
+            
+            <div class="overview-content">
+                <div class="video-section">
+                    <div class="video-preview" onclick="openCompanyVideoModal()">
+                        <div class="video-thumbnail">
+                            <i class="fas fa-play-circle"></i>
+                            <h3 data-translate="watch_overview">Watch Company Overview</h3>
+                            <p data-translate="overview_duration">Duration: 5:30 minutes</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="overview-info">
+                    <h3 data-translate="our_story">Our Story</h3>
+                    <p data-translate="story_content">Founded in 2009, Trexo Engineering & Construction has grown from a small local firm to a leading international construction company. Our journey is marked by innovation, excellence, and an unwavering commitment to client satisfaction.</p>
+                    
+                    <div class="overview-stats">
+                        <div class="overview-stat">
+                            <span class="stat-number">15+</span>
+                            <span class="stat-label" data-translate="years_operation">Years in Operation</span>
+                        </div>
+                        <div class="overview-stat">
+                            <span class="stat-number">45</span>
+                            <span class="stat-label" data-translate="countries">Countries Served</span>
+                        </div>
+                        <div class="overview-stat">
+                            <span class="stat-number">$2.5B</span>
+                            <span class="stat-label" data-translate="projects_value">Total Projects Value</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Company Video Modal -->
+    <div id="companyVideoModal" class="modal">
+        <div class="video-modal-content">
+            <div class="modal-header">
+                <h2 data-translate="company_overview">Company Overview</h2>
+                <button class="close-btn" onclick="closeCompanyVideoModal()">&times;</button>
+            </div>
+            <div class="video-container">
+                <video id="companyVideo" controls width="100%" height="400">
+                    <source src="src/Purplehaze.mp4" type="video/mp4">
+                    <source src="src/Purplehaze.webm" type="video/webm">
+                    <!-- Fallback content -->
+                    <div style="display: flex; align-items: center; justify-content: center; height: 400px; background: var(--primary-color); color: white; flex-direction: column;">
+                        <i class="fas fa-video" style="font-size: 4rem; margin-bottom: 1rem;"></i>
+                        <h3>Company Overview Video</h3>
+                        <p>Video loading...</p>
+                    </div>
+                </video>
+            </div>
+        </div>
+    </div>
+
+    <!-- Organization Structure Section -->
+    <section id="organization" class="organization">
+        <div class="container">
+            <h2 class="section-title" data-translate="organization_structure">Organization Structure</h2>
+            <p class="section-subtitle" data-translate="org_subtitle">Meet our leadership team and organizational hierarchy</p>
+            
+            <div class="org-chart">
+                <div class="org-level">
+                    <div class="org-member ceo">
+                        <div class="member-photo">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <div class="member-info">
+                            <h4>John Smith</h4>
+                            <p data-translate="ceo_title">Chief Executive Officer</p>
+                            <span class="experience" data-translate="ceo_exp">20+ years experience</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="org-level">
+                    <div class="org-member">
+                        <div class="member-photo">
+                            <i class="fas fa-user-cog"></i>
+                        </div>
+                        <div class="member-info">
+                            <h4>Sarah Johnson</h4>
+                            <p data-translate="cto_title">Chief Technology Officer</p>
+                            <span class="experience" data-translate="cto_exp">15+ years experience</span>
+                        </div>
+                    </div>
+                    <div class="org-member">
+                        <div class="member-photo">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="member-info">
+                            <h4>Michael Chen</h4>
+                            <p data-translate="cfo_title">Chief Financial Officer</p>
+                            <span class="experience" data-translate="cfo_exp">18+ years experience</span>
+                        </div>
+                    </div>
+                    <div class="org-member">
+                        <div class="member-photo">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        <div class="member-info">
+                            <h4>Emily Rodriguez</h4>
+                            <p data-translate="coo_title">Chief Operating Officer</p>
+                            <span class="experience" data-translate="coo_exp">16+ years experience</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="org-level departments">
+                    <div class="department">
+                        <h4 data-translate="engineering_dept">Engineering Department</h4>
+                        <p data-translate="eng_staff">45 Engineers & Specialists</p>
+                    </div>
+                    <div class="department">
+                        <h4 data-translate="construction_dept">Construction Department</h4>
+                        <p data-translate="const_staff">120 Construction Workers</p>
+                    </div>
+                    <div class="department">
+                        <h4 data-translate="project_mgmt_dept">Project Management</h4>
+                        <p data-translate="pm_staff">25 Project Managers</p>
+                    </div>
+                    <div class="department">
+                        <h4 data-translate="quality_safety_dept">Quality & Safety</h4>
+                        <p data-translate="qs_staff">10 Quality Inspectors</p>
+                    </div>
+                    <div class="department">
+                        <h4 data-translate="hr_dept">Human Resources</h4>
+                        <p data-translate="hr_staff">5 HR Specialists</p>
+                    </div>
+                    <div class="department">
+                        <h4 data-translate="it_dept">IT Department</h4>
+                        <p data-translate="it_staff">8 IT Support</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        
+    </section>
+
+        <!-- Enhanced Certificates & Awards Section -->
+    <section id="certificates" class="certificates">
+        <div class="container">
+            <h2 class="section-title" data-translate="certificates_awards">Certificates & Awards</h2>
+            <p class="section-subtitle" data-translate="certificates_subtitle">Industry recognition for excellence and quality</p>
+            
+            <div class="certificates-grid">
+                <div class="certificate-card hover-lift" onclick="showCertificateDetails('iso9001')">
+                    <div class="certificate-image">
+                        <i class="fas fa-certificate"></i>
+                    </div>
+                    <div class="certificate-info">
+                        <h3>ISO 9001:2015</h3>
+                        <p>Quality Management Systems</p>
+                        <div class="cert-year">Certified Since 2015</div>
+                        <button class="cert-btn">View Certificate</button>
+                    </div>
+                </div>
+    
+                <div class="certificate-card hover-lift" onclick="showCertificateDetails('osha')">
+                    <div class="certificate-image">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="certificate-info">
+                        <h3>OSHA Safety Award</h3>
+                        <p>Outstanding Safety Performance</p>
+                        <div class="cert-year">2023 Winner</div>
+                        <button class="cert-btn">View Award</button>
+                    </div>
+                </div>
+    
+                <div class="certificate-card hover-lift" onclick="showCertificateDetails('leed')">
+                    <div class="certificate-image">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <div class="certificate-info">
+                        <h3>LEED Certified</h3>
+                        <p>Green Building Leadership</p>
+                        <div class="cert-year">Gold Status</div>
+                        <button class="cert-btn">View Certification</button>
+                    </div>
+                </div>
+    
+                <div class="certificate-card hover-lift" onclick="showCertificateDetails('excellence')">
+                    <div class="certificate-image">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="certificate-info">
+                        <h3>Excellence in Construction</h3>
+                        <p>Industry Leadership Award</p>
+                        <div class="cert-year">2024 Recipient</div>
+                        <button class="cert-btn">View Award</button>
+                    </div>
+                </div>
+    
+                <div class="certificate-card hover-lift" onclick="showCertificateDetails('innovation')">
+                    <div class="certificate-image">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <div class="certificate-info">
+                        <h3>Innovation Award</h3>
+                        <p>Best Engineering Solution</p>
+                        <div class="cert-year">2023 Winner</div>
+                        <button class="cert-btn">View Details</button>
+                    </div>
+                </div>
+    
+                <div class="certificate-card hover-lift" onclick="showCertificateDetails('safety')">
+                    <div class="certificate-image">
+                        <i class="fas fa-hard-hat"></i>
+                    </div>
+                    <div class="certificate-info">
+                        <h3>Safety Excellence</h3>
+                        <p>Zero Incident Record</p>
+                        <div class="cert-year">5 Years Running</div>
+                        <button class="cert-btn">View Record</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+        <!-- Enhanced Projects Section -->
+    <section id="projects" class="projects">
+        <div class="container">
+            <h2 class="section-title" data-translate="our_projects">Our Projects</h2>
+            <p class="section-subtitle" data-translate="projects_subtitle">Showcasing our finest construction achievements</p>
+            
+            <!-- Project Filter Buttons -->
+            <div class="project-filters">
+                <button class="filter-btn active" onclick="filterProjects('all')">All Projects</button>
+                <button class="filter-btn" onclick="filterProjects('residential')">Residential</button>
+                <button class="filter-btn" onclick="filterProjects('commercial')">Commercial</button>
+                <button class="filter-btn" onclick="filterProjects('infrastructure')">Infrastructure</button>
+                <button class="filter-btn" onclick="filterProjects('industrial')">Industrial</button>
+            </div>
+            
+            <div class="projects-grid">
+                <div class="project-card hover-lift" data-category="commercial" onclick="showProjectDetails('skyline-tower')">
+                    <div class="project-image">
+                        <i class="fas fa-building" style="font-size: 3rem;"></i>
+                        <div class="project-overlay">
+                            <button class="view-project-btn">View Details</button>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <h3>Skyline Tower Complex</h3>
+                        <p>Modern 25-story commercial building with sustainable design features and smart building technology.</p>
+                        <div class="project-meta">
+                            <span class="project-category">Commercial</span>
+                            <span class="project-value">$45M</span>
+                            <span class="project-year">2023</span>
+                        </div>
+                        <div class="project-stats">
+                            <div class="stat">
+                                <i class="fas fa-calendar"></i>
+                                <span>18 months</span>
+                            </div>
+                            <div class="stat">
+                                <i class="fas fa-ruler"></i>
+                                <span>500,000 sq ft</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    
+                <div class="project-card hover-lift" data-category="infrastructure" onclick="showProjectDetails('metro-bridge')">
+                    <div class="project-image">
+                        <i class="fas fa-bridge" style="font-size: 3rem;"></i>
+                        <div class="project-overlay">
+                            <button class="view-project-btn">View Details</button>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <h3>Metropolitan Bridge</h3>
+                        <p>Advanced cable-stayed bridge connecting two major districts with innovative engineering solutions.</p>
+                        <div class="project-meta">
+                            <span class="project-category">Infrastructure</span>
+                            <span class="project-value">$120M</span>
+                            <span class="project-year">2022</span>
+                        </div>
+                        <div class="project-stats">
+                            <div class="stat">
+                                <i class="fas fa-calendar"></i>
+                                <span>36 months</span>
+                            </div>
+                            <div class="stat">
+                                <i class="fas fa-road"></i>
+                                <span>2.5 km length</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    
+                <div class="project-card hover-lift" data-category="residential" onclick="showProjectDetails('luxury-villas')">
+                    <div class="project-image">
+                        <i class="fas fa-home" style="font-size: 3rem;"></i>
+                        <div class="project-overlay">
+                            <button class="view-project-btn">View Details</button>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <h3>Luxury Villa Estate</h3>
+                        <p>Premium residential development with 50 luxury villas featuring modern amenities and eco-friendly design.</p>
+                        <div class="project-meta">
+                            <span class="project-category">Residential</span>
+                            <span class="project-value">$85M</span>
+                            <span class="project-year">2024</span>
+                        </div>
+                        <div class="project-stats">
+                            <div class="stat">
+                                <i class="fas fa-calendar"></i>
+                                <span>24 months</span>
+                            </div>
+                            <div class="stat">
+                                <i class="fas fa-home"></i>
+                                <span>50 villas</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    
+                <div class="project-card hover-lift" data-category="industrial" onclick="showProjectDetails('manufacturing-plant')">
+                    <div class="project-image">
+                        <i class="fas fa-industry" style="font-size: 3rem;"></i>
+                        <div class="project-overlay">
+                            <button class="view-project-btn">View Details</button>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <h3>Manufacturing Plant</h3>
+                        <p>State-of-the-art automotive manufacturing facility with automated systems and environmental controls.</p>
+                        <div class="project-meta">
+                            <span class="project-category">Industrial</span>
+                            <span class="project-value">$200M</span>
+                            <span class="project-year">2023</span>
+                        </div>
+                        <div class="project-stats">
+                            <div class="stat">
+                                <i class="fas fa-calendar"></i>
+                                <span>30 months</span>
+                            </div>
+                            <div class="stat">
+                                <i class="fas fa-industry"></i>
+                                <span>1M sq ft</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Location Section -->
+    <section id="location" class="location">
+        <div class="container">
+            <h2 class="section-title" data-translate="our_location">Our Location</h2>
+            <p class="section-subtitle" data-translate="location_subtitle">Visit us at our headquarters or find our offices worldwide</p>
+            
+            <div class="location-content">
+                <div class="location-info">
+                    <h2 data-translate="headquarters">Headquarters</h2>
+                    <p data-translate="hq_address">123 Main Street, Suite 500<br>City, State, 12345</p>
+                    <p data-translate="hq_phone">Phone: (123) 456-7890</p>
+                    <p data-translate="hq_email">Email: info@jenco.com</p>
+                </div>
+                
+                <div class="map-container">
+                    <!-- Embedded Google Map -->
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3151.835434509568!2d144.9537353153164!3d-37.81627997975186!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad642af0f11f8b7%3A0x5045675218ceed7!2sMelbourne%20CBD%2C%20Victoria%2C%20Australia!5e0!3m2!1sen!2sus!4v1616161616161!5m2!1sen!2sus" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+                </div>
+            </div>
+        </div>
+    </section>
+
+        <!-- Enhanced Payment Methods Section -->
+    <section id="payment" class="payment">
+        <div class="container">
+            <h2 class="section-title" data-translate="payment_methods">Payment Methods</h2>
+            <p class="section-subtitle" data-translate="payment_subtitle">Flexible and secure payment options for your convenience</p>
+            
+            <div class="payment-options">
+                <div class="payment-card hover-lift" onclick="selectPaymentMethod('credit-card')">
+                    <div class="payment-icon">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <h3>Credit Cards</h3>
+                    <p>Visa, MasterCard, American Express</p>
+                    <div class="payment-features">
+                        <span class="feature">✓ Secure Processing</span>
+                        <span class="feature">✓ Instant Confirmation</span>
+                        <span class="feature">✓ Payment Plans Available</span>
+                    </div>
+                    <button class="payment-select-btn">Select Method</button>
+                </div>
+    
+                <div class="payment-card hover-lift" onclick="selectPaymentMethod('cryptocurrency')">
+                    <div class="payment-icon">
+                        <i class="fab fa-bitcoin"></i>
+                    </div>
+                    <h3>Cryptocurrency</h3>
+                    <p>Bitcoin, Ethereum, Litecoin</p>
+                    <div class="payment-features">
+                        <span class="feature">✓ Fast Transactions</span>
+                        <span class="feature">✓ Global Acceptance</span>
+                        <span class="feature">✓ Blockchain Secure</span>
+                    </div>
+                    <button class="payment-select-btn">Select Method</button>
+                </div>
+    
+                <div class="payment-card hover-lift" onclick="selectPaymentMethod('financing')">
+                    <div class="payment-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Project Financing</h3>
+                    <p>Flexible payment plans</p>
+                    <div class="payment-features">
+                        <span class="feature">✓ Custom Terms</span>
+                        <span class="feature">✓ Milestone Payments</span>
+                        <span class="feature">✓ Competitive Rates</span>
+                    </div>
+                    <button class="payment-select-btn">Select Method</button>
+                </div>
+    
+                <div class="payment-card hover-lift" onclick="selectPaymentMethod('escrow')">
+                    <div class="payment-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Escrow Service</h3>
+                    <p>Secure third-party holding</p>
+                    <div class="payment-features">
+                        <span class="feature">✓ Protected Funds</span>
+                        <span class="feature">✓ Milestone Release</span>
+                        <span class="feature">✓ Dispute Resolution</span>
+                    </div>
+                    <button class="payment-select-btn">Select Method</button>
+                </div>
+            </div>
+    
+            <!-- Payment Security Info -->
+            <div class="payment-security">
+                <h3>🔒 Secure Payment Processing</h3>
+                <p>All payments are processed through encrypted channels with industry-standard security protocols.</p>
+                <div class="security-badges">
+                    <span class="badge">SSL Encrypted</span>
+                    <span class="badge">PCI Compliant</span>
+                    <span class="badge">Bank Grade Security</span>
+                </div>
+            </div>
+        </div>
+    </section>
+        <!-- Professional Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2 class="section-title" data-translate="contact_us">Get In Touch</h2>
+            <p class="section-subtitle" data-translate="contact_subtitle">Ready to start your project? Let's discuss your construction needs</p>
+            
+            <div class="contact-content">
+                <div class="contact-form">
+                    <h3 data-translate="project_inquiry">Project Inquiry</h3>
+                    <form id="contactForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="name" data-translate="form_name">Full Name *</label>
+                                <input type="text" id="name" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email" data-translate="form_email">Email Address *</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="phone" data-translate="form_phone">Phone Number</label>
+                                <input type="tel" id="phone" name="phone">
+                            </div>
+                            <div class="form-group">
+                                <label for="company" data-translate="form_company">Company</label>
+                                <input type="text" id="company" name="company">
+                            </div>
+                        </div>
+    
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="projectType" data-translate="project_type">Project Type *</label>
+                                <select id="projectType" name="projectType" required>
+                                    <option value="">Select project type</option>
+                                    <option value="residential">🏠 Residential</option>
+                                    <option value="commercial">🏢 Commercial</option>
+                                    <option value="industrial">🏭 Industrial</option>
+                                    <option value="infrastructure">🛣️ Infrastructure</option>
+                                    <option value="renovation">🔨 Renovation</option>
+                                    <option value="consulting">⚙️ Consulting</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="budget" data-translate="form_budget">Budget Range *</label>
+                                <select id="budget" name="budget" required>
+                                    <option value="">Select budget</option>
+                                    <option value="under-50k">Under $50K</option>
+                                    <option value="50k-100k">$50K - $100K</option>
+                                    <option value="100k-500k">$100K - $500K</option>
+                                    <option value="500k-1m">$500K - $1M</option>
+                                    <option value="over-1m">Over $1M</option>
+                                </select>
+                            </div>
+                        </div>
+    
+                        <div class="form-group">
+                            <label for="message" data-translate="form_message">Project Details *</label>
+                            <textarea id="message" name="message" required placeholder="Tell us about your project requirements..."></textarea>
+                        </div>
+    
+                        <button type="submit" class="submit-btn">
+                            <i class="fas fa-paper-plane"></i>
+                            <span data-translate="send_inquiry">Send Inquiry</span>
+                        </button>
+                    </form>
+                </div>
+                
+                <div class="contact-info">
+                    <h3 data-translate="contact_info">Contact Information</h3>
+                    
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <strong data-translate="headquarters">Headquarters</strong>
+                            <p>123 Construction Ave<br>Engineering District<br>City 12345</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <strong data-translate="phone_support">Phone</strong>
+                            <p>+1 (555) 123-4567<br>24/7 Support Available</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <strong data-translate="email_support">Email</strong>
+                            <p>info@trexo.com<br>projects@trexo.com</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <strong data-translate="business_hours">Business Hours</strong>
+                            <p>Mon-Fri: 8AM-6PM<br>Sat: 9AM-4PM</p>
+                        </div>
+                    </div>
+    
+                    <!-- Quick Action Buttons -->
+                    <div class="contact-actions">
+                        <button onclick="openQuoteModal()" class="contact-action-btn primary">
+                            <i class="fas fa-calculator"></i>
+                            Get Quote
+                        </button>
+                        <button onclick="openPaymentModal()" class="contact-action-btn secondary">
+                            <i class="fas fa-credit-card"></i>
+                            Make Payment
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>   
+        <!-- Chat Widget (MISSING - ADD THIS) -->
+    <div class="chat-widget">
+        <button class="chat-button pulse" onclick="toggleChat()" id="chatToggleBtn">
+            <i class="fas fa-comments"></i>
+        </button>
+        
+        <div class="chat-window" id="chatWindow">
+            <div class="chat-header">
+                <div>
+                    <h4 data-translate="chat_support">Live Support</h4>
+                    <div class="chat-status" data-translate="chat_online">We're online now</div>
+                </div>
+                <button class="chat-close" onclick="toggleChat()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages">
+                <div class="chat-message bot">
+                    <span data-translate="chat_welcome">👋 Hello! How can we help you with your construction project today?</span>
+                </div>
+            </div>
+            
+            <div class="chat-input-container">
+                <input type="text" id="chatInput" data-translate-placeholder="chat_placeholder" placeholder="Type your message..." onkeypress="handleChatEnter(event)">
+                <button class="chat-send-btn" onclick="sendMessage()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll to Top Button (ALSO MISSING) -->
+    <button class="scroll-to-top" id="scrollToTop" onclick="scrollToTop()">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <!-- Quote Modal (MISSING) -->
+    <div id="quoteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 data-translate="quote_title">Request Quote</h2>
+                <button class="close-btn" onclick="closeQuoteModal()">&times;</button>
+            </div>
+            <form id="quoteForm">
+                <div class="form-group">
+                    <label for="quoteName" data-translate="form_name">Full Name *</label>
+                    <input type="text" id="quoteName" name="quoteName" required>
+                </div>
+                <div class="form-group">
+                    <label for="quoteEmail" data-translate="form_email">Email Address *</label>
+                    <input type="email" id="quoteEmail" name="quoteEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="quotePhone" data-translate="form_phone">Phone Number</label>
+                    <input type="tel" id="quotePhone" name="quotePhone">
+                </div>
+                <div class="form-group">
+                    <label for="quoteProjectType" data-translate="project_type">Project Type *</label>
+                    <select id="quoteProjectType" name="quoteProjectType" required>
+                        <option value="">Select project type</option>
+                        <option value="residential">Residential</option>
+                        <option value="commercial">Commercial</option>
+                        <option value="industrial">Industrial</option>
+                        <option value="infrastructure">Infrastructure</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="quoteBudget" data-translate="form_budget">Project Budget</label>
+                    <select id="quoteBudget" name="quoteBudget">
+                        <option value="">Select budget range</option>
+                        <option value="under-50k">Under $50,000</option>
+                        <option value="50k-100k">$50,000 - $100,000</option>
+                        <option value="100k-500k">$100,000 - $500,000</option>
+                        <option value="over-500k">Over $500,000</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="quoteDescription" data-translate="project_description">Project Description *</label>
+                    <textarea id="quoteDescription" name="quoteDescription" required></textarea>
+                </div>
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-paper-plane"></i>
+                    <span data-translate="request_quote">Request Quote</span>
+                </button>
+                
+            </form>
+        </div>
+    </div>
+
+    <!-- Payment Modal (MISSING) -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 data-translate="payment_title">Make Payment</h2>
+                <button class="close-btn" onclick="closePaymentModal()">&times;</button>
+            </div>
+            <form id="paymentForm">
+                <div class="form-group">
+                    <label for="paymentAmount" data-translate="payment_amount">Amount ($) *</label>
+                    <input type="number" id="paymentAmount" name="paymentAmount" min="1" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="paymentMethod" data-translate="payment_method">Payment Method *</label>
+                    <select id="paymentMethod" name="paymentMethod" onchange="togglePaymentFields()" required>
+                        <option value="">Select payment method</option>
+                        <option value="credit-card">Credit Card</option>
+                        <option value="crypto">Cryptocurrency</option>
+                    </select>
+                </div>
+                
+                <!-- Credit Card Fields -->
+                <div id="creditCardFields" style="display: none;">
+                    <div class="form-group">
+                        <label for="cardNumber">Card Number *</label>
+                        <input type="text" id="cardNumber" name="cardNumber" placeholder="1234 5678 9012 3456">
+                    </div>
+                    <div style="display: flex; gap: 1rem;">
+                        <div class="form-group" style="flex: 1;">
+                            <label for="expiryDate">Expiry Date *</label>
+                            <input type="text" id="expiryDate" name="expiryDate" placeholder="MM/YY">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label for="cvv">CVV *</label>
+                            <input type="text" id="cvv" name="cvv" placeholder="123">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="cardName">Cardholder Name *</label>
+                        <input type="text" id="cardName" name="cardName">
+                    </div>
+                </div>
+                
+                <!-- Crypto Fields -->
+                <div id="cryptoFields" style="display: none;">
+                    <div class="form-group">
+                        <label for="cryptoType">Cryptocurrency Type *</label>
+                        <select id="cryptoType" name="cryptoType">
+                            <option value="">Select cryptocurrency</option>
+                            <option value="bitcoin">Bitcoin (BTC)</option>
+                            <option value="ethereum">Ethereum (ETH)</option>
+                            <option value="litecoin">Litecoin (LTC)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="paymentDescription" data-translate="payment_description">Description</label>
+                    <input type="text" id="paymentDescription" name="paymentDescription">
+                </div>
+                
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-credit-card"></i>
+                    <span data-translate="process_payment">Process Payment</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer (MISSING) -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3 data-translate="company_info">Company Info</h3>
+                    <p data-translate="footer_description">Leading construction and engineering company delivering innovative solutions worldwide.</p>
+                    <div class="social-links">
+                        <a href="#" data-social="facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" data-social="twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" data-social="linkedin"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" data-social="instagram"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h3 data-translate="our_services">Our Services</h3>
+                    <ul>
+                        <li><a href="#" data-translate="residential_construction">Residential Construction</a></li>
+                        <li><a href="#" data-translate="commercial_construction">Commercial Construction</a></li>
+                        <li><a href="#" data-translate="infrastructure_development">Infrastructure Development</a></li>
+                        <li><a href="#" data-translate="engineering_consulting">Engineering Consulting</a></li>
+                        <li><a href="#" data-translate="project_management">Project Management</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3 data-translate="quick_links">Quick Links</h3>
+                    <ul>
+                        <li><a href="#home" data-translate="nav_home">Home</a></li>
+                        <li><a href="#about" data-translate="nav_about">About</a></li>
+                        <li><a href="#services" data-translate="nav_services">Services</a></li>
+                        <li><a href="#projects" data-translate="nav_projects">Projects</a></li>
+                        <li><a href="#contact" data-translate="nav_contact">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3 data-translate="contact_info">Contact Info</h3>
+                    <ul>
+                        <li><i class="fas fa-map-marker-alt"></i> 123 Construction Ave, City 12345</li>
+                        <li><i class="fas fa-phone"></i> +1 (555) 123-4567</li>
+                        <li><i class="fas fa-envelope"></i> info@trexo.com</li>
+                        <li><i class="fas fa-clock"></i> Mon-Fri: 8AM-6PM</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 Trexo Engineering & Construction. <span data-translate="all_rights_reserved">All rights reserved.</span></p>
+            </div>
+        </div>
+    </footer>
+
+    <span data-translate="company_name">TREXO</span>
+
+    <!-- JavaScript to handle dynamic content loading and interactions -->
+    
+
+    <script>
+        // Modal Functions
+        function openQuoteModal() {
+            document.getElementById('quoteModal').style.display = 'flex';
+        }
+
+        function closeQuoteModal() {
+            document.getElementById('quoteModal').style.display = 'none';
+        }
+
+        function openPaymentModal() {
+            document.getElementById('paymentModal').style.display = 'flex';
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').style.display = 'none';
+        }
+
+
+                // Form submission handlers
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Contact form submitted! We will get back to you soon.');
+        });
+        
+        document.getElementById('quoteForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Quote request submitted! We will send you a quote within 24 hours.');
+            closeQuoteModal();
+        });
+        
+        document.getElementById('paymentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Payment processing... This is a demo.');
+            closePaymentModal();
+        });
+
+        function togglePaymentFields() {
+            const method = document.getElementById('paymentMethod').value;
+            const creditCardFields = document.getElementById('creditCardFields');
+            const cryptoFields = document.getElementById('cryptoFields');
+            
+            if (creditCardFields) creditCardFields.style.display = 'none';
+            if (cryptoFields) cryptoFields.style.display = 'none';
+            
+            if (method === 'credit-card' && creditCardFields) {
+                creditCardFields.style.display = 'block';
+            } else if (method === 'crypto' && cryptoFields) {
+                cryptoFields.style.display = 'block';
+            }
+        }
+
+
+                // Add this to your index.html script section:
+        
+        // Check login status and update navigation
+        function updateNavigation() {
+            const user = localStorage.getItem('trexo_user') || sessionStorage.getItem('trexo_user');
+            const authSection = document.getElementById('authSection');
+            
+            if (user && authSection) {
+                const userData = JSON.parse(user);
+                authSection.innerHTML = `
+                    <div class="user-menu">
+                        <span>Welcome, ${userData.name}</span>
+                        <button onclick="logout()" class="logout-btn">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                `;
+            }
+        }
+        
+        // Logout function for main site
+        async function logout() {
+            try {
+                const response = await fetch('/api/auth/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    localStorage.removeItem('trexo_user');
+                    sessionStorage.removeItem('trexo_user');
+                    
+                    showNotification('Logged out successfully!', 'success');
+                    
+                    // Update navigation back to login button
+                    const authSection = document.getElementById('authSection');
+                    if (authSection) {
+                        authSection.innerHTML = `
+                            <a href="login.html" class="login-btn" data-translate="login">Login</a>
+                        `;
+                    }
+                } else {
+                    showNotification('Logout failed. Please try again.', 'error');
+                }
+            } catch (error) {
+                console.error('Logout error:', error);
+                showNotification('Connection error during logout.', 'error');
+            }
+        }
+        
+        // Call this on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateNavigation();
+            // ... your other initialization code
+        });
+
+        function generateQuotePDF() {
+            if (typeof jsPDF === 'undefined') {
+                alert('PDF generation not available');
+                return;
+            }
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Get form data
+            const name = document.getElementById('quoteName')?.value || '';
+            const email = document.getElementById('quoteEmail')?.value || '';
+            const phone = document.getElementById('quotePhone')?.value || '';
+            const projectType = document.getElementById('quoteProjectType')?.value || '';
+            const budget = document.getElementById('quoteBudget')?.value || '';
+            const description = document.getElementById('quoteDescription')?.value || '';
+            
+            // Add header
+            doc.setFontSize(20);
+            doc.setTextColor(44, 90, 160);
+            doc.text('TREXO ENGINEERING & CONSTRUCTION', 20, 30);
+            
+            doc.setFontSize(16);
+            doc.setTextColor(0, 0, 0);
+            doc.text('PROJECT QUOTE REQUEST', 20, 45);
+            
+            // Add date
+            doc.setFontSize(10);
+            doc.text(`Date: ${new Date().toLocaleDateString()}`, 150, 45);
+            
+            // Add content
+            let yPos = 65;
+            doc.setFontSize(12);
+            
+            if (name) {
+                doc.text(`Client Name: ${name}`, 20, yPos);
+                yPos += 10;
+            }
+            
+            if (email) {
+                doc.text(`Email: ${email}`, 20, yPos);
+                yPos += 10;
+            }
+            
+            if (phone) {
+                doc.text(`Phone: ${phone}`, 20, yPos);
+                yPos += 10;
+            }
+            
+            if (projectType) {
+                doc.text(`Project Type: ${projectType}`, 20, yPos);
+                yPos += 10;
+            }
+            
+            if (budget) {
+                doc.text(`Budget Range: ${budget}`, 20, yPos);
+                yPos += 10;
+            }
+            
+            if (description) {
+                yPos += 5;
+                doc.text('Project Description:', 20, yPos);
+                yPos += 8;
+                
+                const splitDescription = doc.splitTextToSize(description, 170);
+                doc.text(splitDescription, 20, yPos);
+            }
+            
+            
+        }
+
+        // Chat functions
+        function toggleChat() {
+            const chatWindow = document.getElementById('chatWindow');
+            const chatButton = document.getElementById('chatToggleBtn');
+            
+            if (chatWindow && chatButton) {
+                if (chatWindow.style.display === 'none' || chatWindow.style.display === '') {
+                    chatWindow.style.display = 'flex';
+                    chatButton.style.display = 'none';
+                } else {
+                    chatWindow.style.display = 'none';
+                    chatButton.style.display = 'flex';
+                }
+            }
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const messages = document.getElementById('chatMessages');
+            
+            if (input && messages && input.value.trim() !== '') {
+                // Add user message
+                const userMessage = document.createElement('div');
+                userMessage.className = 'chat-message user';
+                userMessage.innerHTML = `<span>${input.value}</span>`;
+                messages.appendChild(userMessage);
+                
+                // Clear input
+                input.value = '';
+                
+                // Auto response
+                setTimeout(() => {
+                    const botMessage = document.createElement('div');
+                    botMessage.className = 'chat-message bot';
+                    botMessage.innerHTML = `<span>Thank you for your message! Our team will get back to you shortly.</span>`;
+                    messages.appendChild(botMessage);
+                    messages.scrollTop = messages.scrollHeight;
+                }, 1000);
+                
+                messages.scrollTop = messages.scrollHeight;
+            }
+        }
+
+        function handleChatEnter(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // Scroll to top function
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Language switching (placeholder)
+        function switchLanguage(lang) {
+            console.log('Language switched to:', lang);
+            // This will be handled by frontend.js
+        }
+
+
+
+                // Add these functions to your existing script section (around line 1950, after the existing functions):
+        
+        function openCompanyVideoModal() {
+            const modal = document.getElementById('companyVideoModal');
+            const video = document.getElementById('companyVideo');
+            
+            if (modal) {
+                modal.style.display = 'flex';
+                
+                // Auto-play video when modal opens
+                if (video) {
+                    video.currentTime = 0;
+                    video.play().catch(error => {
+                        console.log('Video autoplay prevented:', error);
+                    });
+                }
+            }
+        }
+        
+        function closeCompanyVideoModal() {
+            const modal = document.getElementById('companyVideoModal');
+            const video = document.getElementById('companyVideo');
+            
+            if (modal) {
+                modal.style.display = 'none';
+                
+                // Pause video when modal closes
+                if (video) {
+                    video.pause();
+                    video.currentTime = 0;
+                }
+            }
+        }
+        
+        // Close video modal when clicking outside
+        document.addEventListener('click', function(event) {
+            const modal = document.getElementById('companyVideoModal');
+            if (modal && event.target === modal) {
+                closeCompanyVideoModal();
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Language selector
+            const languageSelect = document.getElementById('languageSelect');
+            if (languageSelect) {
+                languageSelect.addEventListener('change', function() {
+                    switchLanguage(this.value);
+                });
+            }
+
+            // Mobile menu toggle
+            const mobileToggle = document.getElementById('mobileMenuToggle');
+            const navbarMenu = document.getElementById('navbarMenu');
+            
+            if (mobileToggle && navbarMenu) {
+                mobileToggle.addEventListener('click', function() {
+                    navbarMenu.classList.toggle('active');
+                    this.classList.toggle('active');
+                });
+            }
+
+            // Scroll to top button
+            window.addEventListener('scroll', function() {
+                const scrollButton = document.getElementById('scrollToTop');
+                if (scrollButton) {
+                    if (window.pageYOffset > 300) {
+                        scrollButton.classList.add('show');
+                    } else {
+                        scrollButton.classList.remove('show');
+                    }
+                }
+            });
+
+
+
+            
+
+            // Smooth scrolling for navigation links
+            const navLinks = document.querySelectorAll('nav a[href^="#"]');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
