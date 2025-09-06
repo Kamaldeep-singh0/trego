@@ -1514,3 +1514,110 @@ window.formatExpiryDate = formatExpiryDate;
 window.updateCardPreview = updateCardPreview;
 window.updatePaymentSummary = updatePaymentSummary;
 window.selectCrypto = selectCrypto;
+
+// ---- Basic helper ----
+async function postJSON(url, body) {
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data?.error || 'Request failed');
+  return data;
+}
+
+// ---- Contact form ----
+(() => {
+  const form = document.getElementById('contactForm');
+  if (!form) return;
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fd = new FormData(form);
+    const payload = {
+      name: fd.get('name'),
+      email: fd.get('email'),
+      phone: fd.get('phone'),
+      company: fd.get('company'),
+      projectType: fd.get('projectType'),
+      budget: fd.get('budget'),
+      message: fd.get('message'),
+    };
+    try {
+      await postJSON('/api/contact', payload);
+      alert('Thanks! We received your message.');
+      form.reset();
+    } catch (err) {
+      alert('Failed to send. ' + err.message);
+    }
+  });
+})();
+
+// ---- Quote form ----
+(() => {
+  const form = document.getElementById('quoteForm');
+  if (!form) return;
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fd = new FormData(form);
+    const payload = {
+      name: fd.get('name'),
+      email: fd.get('email'),
+      phone: fd.get('phone'),
+      serviceType: fd.get('serviceType'),
+      details: fd.get('details'),
+      budget: fd.get('budget'),
+      timeline: fd.get('timeline'),
+    };
+    try {
+      await postJSON('/api/quote', payload);
+      alert('Quote request submitted. We’ll get back to you soon!');
+      form.reset();
+    } catch (err) {
+      alert('Failed to submit quote. ' + err.message);
+    }
+  });
+})();
+
+// ---- Payment form (supports "stripe" OR existing simulated methods) ----
+(() => {
+  const form = document.getElementById('paymentForm');
+  if (!form) return;
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fd = new FormData(form);
+    const paymentMethod = (fd.get('paymentMethod') || '').toLowerCase();
+    const payload = {
+      amount: Number(fd.get('amount')),
+      description: fd.get('description') || 'Trexo Payment',
+      customerInfo: {
+        name: fd.get('name'),
+        email: fd.get('email'),
+      },
+      // For simulated card flow (already supported by /api/payment):
+      cardNumber: fd.get('cardNumber'),
+      expiryDate: fd.get('expiryDate'),
+      cvv: fd.get('cvv'),
+      cardName: fd.get('cardName'),
+      // For simulated crypto flow:
+      walletAddress: fd.get('walletAddress'),
+    };
+
+    try {
+      if (paymentMethod === 'stripe') {
+        // Real money via Stripe Checkout
+        const data = await postJSON('/api/checkout/session', payload);
+        if (data?.url) window.location.href = data.url;
+        else alert('Failed to start checkout.');
+      } else {
+        // Existing simulated flow
+        payload.paymentMethod = paymentMethod;
+        await postJSON('/api/payment', payload);
+        alert('Payment submitted for processing (demo). Check Admin → Transactions.');
+        form.reset();
+      }
+    } catch (err) {
+      alert('Payment error: ' + err.message);
+    }
+  });
+})();

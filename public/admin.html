@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="x-admin-key" content="dev-admin">
     <title>Trexo Admin Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -501,11 +502,19 @@
             </div>
         </header>
         <nav class="nav-tabs">
-            <button class="nav-btn active" onclick="showTab('overview')"><i class="fas fa-chart-pie"></i> Overview</button>
-            <button class="nav-btn" onclick="showTab('transactions')"><i class="fas fa-credit-card"></i> Transactions</button>
-            <button class="nav-btn" onclick="showTab('tickets')"><i class="fas fa-ticket-alt"></i> Support Tickets</button>
-            <button class="nav-btn" onclick="showTab('chat')"><i class="fas fa-comments"></i> Live Chat <span id="chatNotification" class="hidden" style="background: #f39c12; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 0.7rem; display: inline-flex; align-items: center; justify-content: center; margin-left: 5px;">3</span></button>
+            <button class="nav-btn active" onclick="showTab('overview', this)"><i class="fas fa-chart-pie"></i> Overview</button>
+<button class="nav-btn" onclick="showTab('transactions', this)"><i class="fas fa-credit-card"></i> Transactions</button>
+<button class="nav-btn" onclick="showTab('tickets', this)"><i class="fas fa-ticket-alt"></i> Support Tickets</button>
+<button class="nav-btn" onclick="showTab('chat', this)">
+  <i class="fas fa-comments"></i> Live Chat
+  <span id="chatNotification" class="hidden" style="background:#f39c12;color:#fff;border-radius:50%;width:18px;height:18px;font-size:0.7rem;display:inline-flex;align-items:center;justify-content:center;margin-left:5px;">3</span>
+</button>
+
+
+
         </nav>
+        <div id="globalAlert" style="max-width:1400px;margin:0 auto;padding:0 2rem;"></div>
+
         <main class="content">
             <!-- Overview Tab -->
             <div id="overview" class="tab-content active">
@@ -593,7 +602,11 @@
             </div>
         </main>
     </div>
-    <script>
+   <script >
+        const ADMIN_KEY = document.querySelector('meta[name="x-admin-key"]')?.content || 'dev-admin';
+
+        function fmtDate(d) { return new Date(d).toLocaleDateString(); }
+function fmtTime(d) { return new Date(d).toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit', hour12:false}); }
         let currentAdmin = null;
         let currentTab = 'overview';
         let currentChatId = null;
@@ -603,105 +616,78 @@
             'support': { password: 'support123', name: 'Support Manager', role: 'Support' },
             'manager': { password: 'manager123', name: 'Project Manager', role: 'Manager' }
         };
-        const DEMO_DATA = {
-            totalRevenue: 2450000,
-            totalTransactions: 156,
-            pendingTransactions: 23,
-            completedTransactions: 125,
-            totalTickets: 48,
-            newTickets: 12,
-            recentTransactions: [
-                { id: 'TXN-001', amount: 45000, method: 'Bank Transfer', status: 'completed', timestamp: new Date('2024-12-20') },
-                { id: 'TXN-002', amount: 32000, method: 'Credit Card', status: 'pending', timestamp: new Date('2024-12-19') },
-                { id: 'TXN-003', amount: 78000, method: 'Check', status: 'completed', timestamp: new Date('2024-12-18') },
-                { id: 'TXN-004', amount: 25000, method: 'Bank Transfer', status: 'failed', timestamp: new Date('2024-12-17') },
-                { id: 'TXN-005', amount: 95000, method: 'Wire Transfer', status: 'completed', timestamp: new Date('2024-12-16') }
-            ],
-            recentTickets: [
-                { id: 1, type: 'quote', name: 'John Smith', status: 'new', timestamp: new Date('2024-12-20') },
-                { id: 2, type: 'contact', name: 'Sarah Johnson', status: 'in-progress', timestamp: new Date('2024-12-19') },
-                { id: 3, type: 'quote', name: 'Mike Wilson', status: 'closed', timestamp: new Date('2024-12-18') },
-                { id: 4, type: 'contact', name: 'Lisa Brown', status: 'new', timestamp: new Date('2024-12-17') },
-                { id: 5, type: 'quote', name: 'David Davis', status: 'in-progress', timestamp: new Date('2024-12-16') }
-            ],
-            allTransactions: [
-                { id: 'TXN-001', amount: 45000, method: 'Bank Transfer', status: 'completed', timestamp: new Date('2024-12-20'), customer: 'ABC Corp' },
-                { id: 'TXN-002', amount: 32000, method: 'Credit Card', status: 'pending', timestamp: new Date('2024-12-19'), customer: 'XYZ Ltd' },
-                { id: 'TXN-003', amount: 78000, method: 'Check', status: 'completed', timestamp: new Date('2024-12-18'), customer: 'Smith Enterprises' },
-                { id: 'TXN-004', amount: 25000, method: 'Bank Transfer', status: 'failed', timestamp: new Date('2024-12-17'), customer: 'Johnson Co' },
-                { id: 'TXN-005', amount: 95000, method: 'Wire Transfer', status: 'completed', timestamp: new Date('2024-12-16'), customer: 'Wilson Group' },
-                { id: 'TXN-006', amount: 56000, method: 'Credit Card', status: 'pending', timestamp: new Date('2024-12-15'), customer: 'Brown LLC' },
-                { id: 'TXN-007', amount: 67000, method: 'Bank Transfer', status: 'completed', timestamp: new Date('2024-12-14'), customer: 'Davis Inc' }
-            ],
-            allTickets: [
-                { id: 1, type: 'quote', name: 'John Smith', email: 'john@example.com', projectType: 'Residential', status: 'new', timestamp: new Date('2024-12-20'), message: 'Need quote for house renovation' },
-                { id: 2, type: 'contact', name: 'Sarah Johnson', email: 'sarah@example.com', projectType: 'Commercial', status: 'in-progress', timestamp: new Date('2024-12-19'), message: 'Interested in office building construction' },
-                { id: 3, type: 'quote', name: 'Mike Wilson', email: 'mike@example.com', projectType: 'Industrial', status: 'closed', timestamp: new Date('2024-12-18'), message: 'Warehouse construction project' },
-                { id: 4, type: 'contact', name: 'Lisa Brown', email: 'lisa@example.com', projectType: 'Residential', status: 'new', timestamp: new Date('2024-12-17'), message: 'Questions about kitchen remodeling' },
-                { id: 5, type: 'quote', name: 'David Davis', email: 'david@example.com', projectType: 'Commercial', status: 'in-progress', timestamp: new Date('2024-12-16'), message: 'Shopping center renovation quote' },
-                { id: 6, type: 'contact', name: 'Emma Garcia', email: 'emma@example.com', projectType: 'Residential', status: 'new', timestamp: new Date('2024-12-15'), message: 'Bathroom renovation inquiry' },
-                { id: 7, type: 'quote', name: 'James Martinez', email: 'james@example.com', projectType: 'Industrial', status: 'closed', timestamp: new Date('2024-12-14'), message: 'Factory extension project' }
-            ],
-            chatSessions: [
-                {
-                    id: 1,
-                    name: 'John Smith',
-                    email: 'john@example.com',
-                    status: 'online',
-                    lastMessage: 'Thank you for the quick response!',
-                    timestamp: new Date('2024-12-20T10:30:00'),
-                    unread: false,
-                    messages: [
-                        { id: 1, sender: 'client', message: 'Hi, I need help with my project quote', timestamp: new Date('2024-12-20T10:00:00') },
-                        { id: 2, sender: 'admin', message: 'Hello John! I\'d be happy to help you with your quote. What specific information do you need?', timestamp: new Date('2024-12-20T10:02:00') },
-                        { id: 3, sender: 'client', message: 'I submitted a quote request yesterday for a house renovation, but I haven\'t received a response yet.', timestamp: new Date('2024-12-20T10:05:00') },
-                        { id: 4, sender: 'admin', message: 'Let me check that for you. Can you please provide your email or reference number?', timestamp: new Date('2024-12-20T10:07:00') },
-                        { id: 5, sender: 'client', message: 'My email is john@example.com and I submitted it around 2 PM yesterday.', timestamp: new Date('2024-12-20T10:10:00') },
-                        { id: 6, sender: 'admin', message: 'Found it! I can see your renovation quote request. Our team will review it and send you a detailed quote within 24 hours.', timestamp: new Date('2024-12-20T10:15:00') },
-                        { id: 7, sender: 'client', message: 'That\'s great! Will it include material costs and timeline estimates?', timestamp: new Date('2024-12-20T10:20:00') },
-                        { id: 8, sender: 'admin', message: 'Absolutely! The quote will include a detailed breakdown of materials, labor costs, timeline, and any permits required.', timestamp: new Date('2024-12-20T10:25:00') },
-                        { id: 9, sender: 'client', message: 'Thank you for the quick response!', timestamp: new Date('2024-12-20T10:30:00') }
-                    ]
-                },
-                {
-                    id: 2,
-                    name: 'Sarah Johnson',
-                    email: 'sarah@example.com',
-                    status: 'online',
-                    lastMessage: 'Can you schedule a site visit?',
-                    timestamp: new Date('2024-12-20T09:45:00'),
-                    unread: true,
-                    messages: [
-                        { id: 1, sender: 'client', message: 'Hello, I\'m interested in commercial construction services.', timestamp: new Date('2024-12-20T09:30:00') },
-                        { id: 2, sender: 'admin', message: 'Hi Sarah! Great to hear from you. What type of commercial project are you planning?', timestamp: new Date('2024-12-20T09:32:00') },
-                        { id: 3, sender: 'client', message: 'We\'re looking to build a new office complex. About 50,000 sq ft.', timestamp: new Date('2024-12-20T09:35:00') },
-                        { id: 4, sender: 'admin', message: 'That sounds like an exciting project! Do you have the land already, or do you need assistance with site selection as well?', timestamp: new Date('2024-12-20T09:37:00') },
-                        { id: 5, sender: 'client', message: 'We have the land. It\'s in the downtown business district.', timestamp: new Date('2024-12-20T09:40:00') },
-                        { id: 6, sender: 'admin', message: 'Perfect location! We have extensive experience with downtown commercial projects. Would you like to schedule a consultation?', timestamp: new Date('2024-12-20T09:42:00') },
-                        { id: 7, sender: 'client', message: 'Yes, that would be great. Can you schedule a site visit?', timestamp: new Date('2024-12-20T09:45:00') }
-                    ]
-                },
-                {
-                    id: 3,
-                    name: 'Mike Wilson',
-                    email: 'mike@example.com',
-                    status: 'offline',
-                    lastMessage: 'Thanks for all your help!',
-                    timestamp: new Date('2024-12-19T16:20:00'),
-                    unread: false,
-                    messages: [
-                        { id: 1, sender: 'client', message: 'Hi, I have a question about my warehouse project timeline.', timestamp: new Date('2024-12-19T16:00:00') },
-                        { id: 2, sender: 'admin', message: 'Hello Mike! I\'d be happy to help. What specific aspect of the timeline are you concerned about?', timestamp: new Date('2024-12-19T16:02:00') },
-                        { id: 3, sender: 'client', message: 'The foundation work seems to be taking longer than expected.', timestamp: new Date('2024-12-19T16:05:00') },
-                        { id: 4, sender: 'admin', message: 'Let me check with the project manager. There might have been some weather delays this week.', timestamp: new Date('2024-12-19T16:07:00') },
-                        { id: 5, sender: 'admin', message: 'I\'ve confirmed that we had 2 days of delays due to rain, but we\'re back on track now. The foundation should be completed by Friday.', timestamp: new Date('2024-12-19T16:15:00') },
-                        { id: 6, sender: 'client', message: 'That\'s good to hear. Will this affect the overall completion date?', timestamp: new Date('2024-12-19T16:17:00') },
-                        { id: 7, sender: 'admin', message: 'We should be able to make up the time during the next phase. The overall timeline remains the same.', timestamp: new Date('2024-12-19T16:18:00') },
-                        { id: 8, sender: 'client', message: 'Thanks for all your help!', timestamp: new Date('2024-12-19T16:20:00') }
-                    ]
-                }
-            ]
-        };
+       
+   const API = {
+  async req(url, options) {
+    try {
+      const r = await fetch(url, options);
+      if (!r.ok) {
+        const text = await r.text().catch(() => '');
+        throw new Error(text || r.statusText || 'Request failed');
+      }
+      return r.json();
+    } catch (e) {
+      console.error('API error:', e);
+      throw e;
+    }
+  },
+  getTransactions(status = 'all') {
+    const qs = status !== 'all' ? `?status=${encodeURIComponent(status)}` : '';
+    return this.req(`/api/transactions${qs}`);
+  },
+  getTickets({ status = 'all', type = 'all' } = {}) {
+    const p = new URLSearchParams();
+    if (status !== 'all') p.set('status', status);
+    if (type !== 'all') p.set('type', type);
+    const qs = p.toString() ? `?${p}` : '';
+    return this.req(`/api/tickets${qs}`);
+  },
+  getStats() {
+    return this.req('/api/stats');
+  },
+  async  updateTransactionStatus(id, status) {
+  // disable buttons in this row
+  document.querySelectorAll(`button[onclick*="${id}"]`).forEach(b => b.disabled = true);
+
+  const ok = await safeRun(
+    API.updateTransactionStatus(id, status),
+    () => showAlert('globalAlert', 'error', 'Failed to update transaction.')
+  );
+
+  // re-enable (UI will refresh anyway, but safe)
+  document.querySelectorAll(`button[onclick*="${id}"]`).forEach(b => b.disabled = false);
+  if (!ok) return;
+
+  await loadTransactions();
+  await loadDashboardData();
+},
+  updateTicketStatus(id, status) {
+    return this.req(`/api/tickets/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-admin-key': ADMIN_KEY
+      },
+      body: JSON.stringify({ status })
+    });
+  }
+};
+
+async function safeRun(promise, onError) {
+  try { return await promise; }
+  catch (e) { onError?.(e); return null; }
+}
+
+function updateChatNotifications(count = 0) {
+  const badge = document.getElementById('chatNotification');
+  if (!badge) return;
+  if (count > 0) {
+    badge.textContent = String(count);
+    badge.classList.remove('hidden');
+  } else {
+    badge.classList.add('hidden');
+  }
+}
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
@@ -808,34 +794,26 @@
             updateChatNotifications();
         }
 
-        function showTab(tabName) {
-            // Update active tab button
-            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            
-            // Show tab content
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.getElementById(tabName).classList.add('active');
-            
-            currentTab = tabName;
-            
-            // Load tab-specific data
-            switch(tabName) {
-                case 'overview':
-                    loadDashboardData();
-                    break;
-                case 'transactions':
-                    loadTransactions();
-                    break;
-                case 'tickets':
-                    loadTickets();
-                    break;
-                case 'chat':
-                    loadChatSessions();
-                    startChatUpdates();
-                    break;
-            }
-        }
+       function showTab(tabName, el) {
+  // Update active tab button
+  document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+  if (el) el.classList.add('active');
+
+  // Show tab content
+  document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+  document.getElementById(tabName).classList.add('active');
+
+  currentTab = tabName;
+
+  // Load tab-specific data
+  switch (tabName) {
+    case 'overview':     loadDashboardData();   break;
+    case 'transactions': loadTransactions();    break;
+    case 'tickets':      loadTickets();         break;
+    case 'chat':         loadChatSessions();    startChatUpdates(); break;
+  }
+}
+
 
         function showAlert(containerId, type, message) {
             const container = document.getElementById(containerId);
@@ -847,10 +825,30 @@
         }
 
         // Data Loading Functions
-        function loadDashboardData() {
-            displayStats(DEMO_DATA);
-            displayRecentActivity(DEMO_DATA);
-        }
+ async function loadDashboardData() {
+  const [stats, txns, tickets] = await Promise.all([
+    API.getStats(),
+    API.getTransactions('all'),
+    API.getTickets({})
+  ]);
+
+  const recentTransactions = [...txns].sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp)).slice(0,5);
+  const recentTickets = [...tickets].sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp)).slice(0,5);
+
+  displayStats({
+    totalRevenue: stats.totalRevenueNet ?? stats.totalRevenue ?? 0,
+    totalTransactions: stats.totalTransactions,
+    pendingTransactions: stats.pendingTransactions,
+    completedTransactions: stats.completedTransactions,
+    totalTickets: stats.totalTickets,
+    newTickets: stats.newTickets
+  });
+
+  displayRecentActivity({ recentTransactions, recentTickets });
+}
+
+
+
 
         function displayStats(data) {
             const statsGrid = document.getElementById('statsGrid');
@@ -936,263 +934,221 @@
         }
 
         function displayRecentActivity(data) {
-            const container = document.getElementById('recentActivity');
-            
-            let html = '<h4 style="padding: 1rem; color: #333; font-size: 1.1rem;">Recent Transactions</h4>';
-            html += '<table><thead><tr><th>Transaction ID</th><th>Amount</th><th>Method</th><th>Status</th><th>Date</th></tr></thead><tbody>';
-            
-            data.recentTransactions.forEach(txn => {
-                html += `
-                    <tr>
-                        <td><strong>${txn.id}</strong></td>
-                        <td><strong>$${txn.amount.toLocaleString()}</strong></td>
-                        <td>${txn.method}</td>
-                        <td><span class="status-badge status-${txn.status}">${txn.status}</span></td>
-                        <td>${txn.timestamp.toLocaleDateString()}</td>
-                    </tr>
-                `;
-            });
-            
-            html += '</tbody></table>';
-            
-            html += '<h4 style="padding: 1rem; padding-bottom: 0; color: #333; font-size: 1.1rem;">Recent Support Tickets</h4>';
-            html += '<table><thead><tr><th>Ticket ID</th><th>Type</th><th>Customer</th><th>Status</th><th>Date</th></tr></thead><tbody>';
-            
-            data.recentTickets.forEach(ticket => {
-                html += `
-                    <tr>
-                        <td><strong>#${ticket.id}</strong></td>
-                        <td><span style="text-transform: capitalize;">${ticket.type}</span></td>
-                        <td>${ticket.name}</td>
-                        <td><span class="status-badge status-${ticket.status}">${ticket.status}</span></td>
-                        <td>${ticket.timestamp.toLocaleDateString()}</td>
-                    </tr>
-                `;
-            });
-            
-            html += '</tbody></table>';
-            container.innerHTML = html;
-        }
+  const container = document.getElementById('recentActivity');
 
-        function loadTransactions() {
-            const status = document.getElementById('transactionStatusFilter').value;
-            let filteredTransactions = DEMO_DATA.allTransactions;
-            
-            if (status !== 'all') {
-                filteredTransactions = DEMO_DATA.allTransactions.filter(txn => txn.status === status);
-            }
-            
-            displayTransactions(filteredTransactions);
-        }
+  let html = '<h4 style="padding: 1rem; color: #333; font-size: 1.1rem;">Recent Transactions</h4>';
+  html += '<table><thead><tr><th>Transaction ID</th><th>Amount</th><th>Method</th><th>Status</th><th>Date</th></tr></thead><tbody>';
 
-        function displayTransactions(transactions) {
-            const container = document.getElementById('transactionsTable');
-            
-            let html = '<table><thead><tr><th>Transaction ID</th><th>Customer</th><th>Amount</th><th>Method</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead><tbody>';
-            
-            transactions.forEach(txn => {
-                html += `
-                    <tr>
-                        <td><strong>${txn.id}</strong></td>
-                        <td>${txn.customer}</td>
-                        <td><strong>$${txn.amount.toLocaleString()}</strong></td>
-                        <td>${txn.method}</td>
-                        <td><span class="status-badge status-${txn.status}">${txn.status}</span></td>
-                        <td>${txn.timestamp.toLocaleDateString()}</td>
-                        <td>
-                            ${txn.status === 'pending' ? `
-                                <button class="action-btn success" onclick="updateTransactionStatus('${txn.id}', 'completed')">
-                                    <i class="fas fa-check"></i> Complete
-                                </button>
-                                <button class="action-btn danger" onclick="updateTransactionStatus('${txn.id}', 'failed')">
-                                    <i class="fas fa-times"></i> Fail
-                                </button>
-                            ` : '<span style="color: #999;">No actions</span>'}
-                        </td>
-                    </tr>
-                `;
-            });
-            
-            html += '</tbody></table>';
-            container.innerHTML = html;
-        }
+  (data.recentTransactions || []).forEach(txn => {
+    const amt = (txn.netAmount ?? txn.amount ?? 0).toLocaleString();
+    const method = txn.paymentMethod || txn.method || '—';
+    html += `
+      <tr>
+        <td><strong>${txn.id}</strong></td>
+        <td><strong>$${amt}</strong></td>
+        <td>${method}</td>
+        <td><span class="status-badge status-${txn.status}">${txn.status}</span></td>
+        <td>${fmtDate(txn.timestamp)}</td>
+      </tr>`;
+  });
 
-        function loadTickets() {
-            const status = document.getElementById('ticketStatusFilter').value;
-            const type = document.getElementById('ticketTypeFilter').value;
-            
-            let filteredTickets = DEMO_DATA.allTickets;
-            
-            if (status !== 'all') {
-                filteredTickets = filteredTickets.filter(ticket => ticket.status === status);
-            }
-            
-            if (type !== 'all') {
-                filteredTickets = filteredTickets.filter(ticket => ticket.type === type);
-            }
-            
-            displayTickets(filteredTickets);
-        }
+  html += '</tbody></table>';
 
-        function displayTickets(tickets) {
-            const container = document.getElementById('ticketsTable');
-            
-            let html = '<table><thead><tr><th>Ticket ID</th><th>Type</th><th>Customer</th><th>Email</th><th>Project Type</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead><tbody>';
-            
-            tickets.forEach(ticket => {
-                html += `
-                    <tr>
-                        <td><strong>#${ticket.id}</strong></td>
-                        <td><span style="text-transform: capitalize;">${ticket.type}</span></td>
-                        <td>${ticket.name}</td>
-                        <td>${ticket.email}</td>
-                        <td>${ticket.projectType || 'N/A'}</td>
-                        <td><span class="status-badge status-${ticket.status}">${ticket.status}</span></td>
-                        <td>${ticket.timestamp.toLocaleDateString()}</td>
-                        <td>
-                            ${ticket.status === 'new' ? `
-                                <button class="action-btn" onclick="updateTicketStatus(${ticket.id}, 'in-progress')">
-                                    <i class="fas fa-play"></i> Start
-                                </button>
-                            ` : ''}
-                            ${ticket.status === 'in-progress' ? `
-                                <button class="action-btn success" onclick="updateTicketStatus(${ticket.id}, 'closed')">
-                                    <i class="fas fa-check"></i> Close
-                                </button>
-                            ` : ''}
-                            ${ticket.status === 'closed' ? `
-                                <span style="color: #999;">Closed</span>
-                            ` : ''}
-                        </td>
-                    </tr>
-                `;
-            });
-            
-            html += '</tbody></table>';
-            container.innerHTML = html;
-        }
+  html += '<h4 style="padding: 1rem; padding-bottom: 0; color: #333; font-size: 1.1rem;">Recent Support Tickets</h4>';
+  html += '<table><thead><tr><th>Ticket ID</th><th>Type</th><th>Customer</th><th>Status</th><th>Date</th></tr></thead><tbody>';
+
+  (data.recentTickets || []).forEach(ticket => {
+    html += `
+      <tr>
+        <td><strong>#${ticket.id}</strong></td>
+        <td><span style="text-transform: capitalize;">${ticket.type}</span></td>
+        <td>${ticket.name}</td>
+        <td><span class="status-badge status-${ticket.status}">${ticket.status}</span></td>
+        <td>${fmtDate(ticket.timestamp)}</td>
+      </tr>`;
+  });
+
+  html += '</tbody></table>';
+  container.innerHTML = html;
+}
+
+
+async function loadTransactions() {
+  const container = document.getElementById('transactionsTable');
+  container.innerHTML = '<div style="padding:1rem;">Loading transactions…</div>';
+
+  const status = document.getElementById('transactionStatusFilter').value;
+  const data = await safeRun(
+    API.getTransactions(status),
+    () => showAlert('globalAlert', 'error', 'Failed to load transactions.')
+  );
+  if (!data) return;
+
+  displayTransactions(data);
+}
+
+
+
+function displayTransactions(transactions) {
+  const container = document.getElementById('transactionsTable');
+
+  let html = '<table><thead><tr><th>Transaction ID</th><th>Customer</th><th>Amount</th><th>Method</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead><tbody>';
+
+  (transactions || []).forEach(txn => {
+    const customer = (txn.customerInfo && txn.customerInfo.name) || txn.customer || '—';
+    const method = txn.paymentMethod || txn.method || '—';
+    const amount = (txn.netAmount ?? txn.amount ?? 0).toLocaleString();
+
+    html += `
+      <tr>
+        <td><strong>${txn.id}</strong></td>
+        <td>${customer}</td>
+        <td><strong>$${amount}</strong></td>
+        <td>${method}</td>
+        <td><span class="status-badge status-${txn.status}">${txn.status}</span></td>
+        <td>${fmtDate(txn.timestamp)}</td>
+        <td>
+          ${txn.status === 'pending' ? `
+            <button class="action-btn success" onclick="updateTransactionStatus('${txn.id}', 'completed')">
+              <i class="fas fa-check"></i> Complete
+            </button>
+            <button class="action-btn danger" onclick="updateTransactionStatus('${txn.id}', 'failed')">
+              <i class="fas fa-times"></i> Fail
+            </button>
+          ` : '<span style="color:#999;">No actions</span>'}
+        </td>
+      </tr>`;
+  });
+
+  html += '</tbody></table>';
+  container.innerHTML = html;
+}
+
+
+async function updateTransactionStatus(id, status) {
+  await API.updateTransactionStatus(id, status);
+  await loadTransactions();
+  await loadDashboardData();
+}
+
+
+       
+
+ async function loadTickets() {
+  const container = document.getElementById('ticketsTable');
+  container.innerHTML = '<div style="padding:1rem;">Loading tickets…</div>';
+
+  const status = document.getElementById('ticketStatusFilter').value;
+  const type   = document.getElementById('ticketTypeFilter').value;
+
+  const data = await safeRun(
+    API.getTickets({ status, type }),
+    () => showAlert('globalAlert', 'error', 'Failed to load tickets.')
+  );
+  if (!data) return;
+
+  displayTickets(data);
+}
+
+function displayTickets(tickets) {
+  const container = document.getElementById('ticketsTable');
+
+  let html = '<table><thead><tr><th>Ticket ID</th><th>Type</th><th>Customer</th><th>Email</th><th>Project Type</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead><tbody>';
+
+  (tickets || []).forEach(t => {
+    html += `
+      <tr>
+        <td><strong>#${t.id}</strong></td>
+        <td><span style="text-transform:capitalize;">${t.type}</span></td>
+        <td>${t.name}</td>
+        <td>${t.email}</td>
+        <td>${t.projectType || 'N/A'}</td>
+        <td><span class="status-badge status-${t.status}">${t.status}</span></td>
+        <td>${fmtDate(t.timestamp)}</td>
+        <td>
+          ${t.status === 'new' ? `
+            <button class="action-btn" onclick="updateTicketStatus(${t.id}, 'in-progress')">
+              <i class="fas fa-play"></i> Start
+            </button>` : ''}
+          ${t.status === 'in-progress' ? `
+            <button class="action-btn success" onclick="updateTicketStatus(${t.id}, 'closed')">
+              <i class="fas fa-check"></i> Close
+            </button>` : ''}
+          ${t.status === 'closed' ? `<span style="color:#999;">Closed</span>` : ''}
+        </td>
+      </tr>`;
+  });
+
+  html += '</tbody></table>';
+  container.innerHTML = html;
+}
+
+
+async function updateTicketStatus(id, status) {
+  // disable buttons in this row
+  document.querySelectorAll(`button[onclick*="updateTicketStatus(${id},"]`).forEach(b => b.disabled = true);
+
+  const ok = await safeRun(
+    API.updateTicketStatus(id, status),
+    () => showAlert('globalAlert', 'error', 'Failed to update ticket.')
+  );
+
+  document.querySelectorAll(`button[onclick*="updateTicketStatus(${id},"]`).forEach(b => b.disabled = false);
+  if (!ok) return;
+
+  await loadTickets();
+  await loadDashboardData();
+}
+
+
+
+        
 
         // Chat Functions
         function loadChatSessions() {
-            const chatList = document.getElementById('chatList');
-            const sessions = DEMO_DATA.chatSessions;
-            
-            chatList.innerHTML = '';
-            
-            sessions.forEach(session => {
-                const chatItem = document.createElement('div');
-                chatItem.className = `chat-item ${session.unread ? 'unread' : ''}`;
-                chatItem.onclick = () => openChat(session.id);
-                
-                chatItem.innerHTML = `
-                    <div class="chat-time">${formatTime(session.timestamp)}</div>
-                    <div class="chat-name">${session.name}</div>
-                    <div class="chat-preview">${session.lastMessage}</div>
-                `;
-                
-                chatList.appendChild(chatItem);
-            });
-        }
+  const chatList = document.getElementById('chatList');
+  chatList.innerHTML = `
+    <div class="chat-item">
+      <div class="chat-name">No active chats</div>
+      <div class="chat-preview">Chat integration coming soon…</div>
+    </div>
+  `;
+  updateChatNotifications(0);
+}
+
 
         function openChat(chatId) {
-            currentChatId = chatId;
-            const session = DEMO_DATA.chatSessions.find(s => s.id === chatId);
-            
-            if (!session) return;
-            
-            // Mark as read
-            session.unread = false;
-            updateChatNotifications();
-            
-            // Update active chat item
-            document.querySelectorAll('.chat-item').forEach(item => item.classList.remove('active'));
-            event.target.closest('.chat-item').classList.add('active');
-            
-            // Show chat window
-            document.getElementById('chatPlaceholder').style.display = 'none';
-            document.getElementById('chatWindow').classList.remove('hidden');
-            
-            // Update chat header
-            document.getElementById('currentChatName').textContent = session.name;
-            document.getElementById('currentChatAvatar').textContent = session.name.split(' ').map(n => n[0]).join('');
-            document.getElementById('currentChatStatus').textContent = session.status === 'online' ? 'Online' : 'Offline';
-            
-            // Load messages
-            displayChatMessages(session.messages);
-            
-            // Focus message input
-            document.getElementById('messageInput').focus();
         }
 
         function displayChatMessages(messages) {
-            const container = document.getElementById('chatMessages');
-            container.innerHTML = '';
-            
-            messages.forEach(message => {
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `message ${message.sender}`;
-                
-                messageDiv.innerHTML = `
-                    <div class="message-avatar">${message.sender === 'admin' ? 'AD' : 'CL'}</div>
-                    <div class="message-content">
-                        <div class="message-bubble">${message.message}</div>
-                        <div class="message-time">${formatTime(message.timestamp)}</div>
-                    </div>
-                `;
-                
-                container.appendChild(messageDiv);
-            });
-            
-            // Scroll to bottom
-            container.scrollTop = container.scrollHeight;
-        }
+  const container = document.getElementById('chatMessages');
+  container.innerHTML = '';
 
-        function closeChatSession() {
-            if (confirm('Are you sure you want to end this chat session?')) {
-                const session = DEMO_DATA.chatSessions.find(s => s.id === currentChatId);
-                
-                if (session) {
-                    session.status = 'offline';
-                    session.lastMessage = 'Chat session ended.';
-                    session.timestamp = new Date();
-                    
-                    // Update chat list and close chat window
-                    loadChatSessions();
-                    document.getElementById('chatWindow').classList.add('hidden');
-                    document.getElementById('chatPlaceholder').style.display = 'flex';
-                }
-            }
-        }
+  (messages || []).forEach(message => {
+    const div = document.createElement('div');
+    div.className = `message ${message.sender}`;
+    div.innerHTML = `
+      <div class="message-avatar">${message.sender === 'admin' ? 'AD' : 'CL'}</div>
+      <div class="message-content">
+        <div class="message-bubble">${message.message}</div>
+        <div class="message-time">${fmtTime(message.timestamp)}</div>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+
+  container.scrollTop = container.scrollHeight;
+}
+
+
+      function closeChatSession() {
+  // just swap views safely
+  document.getElementById('chatWindow').classList.add('hidden');
+  document.getElementById('chatPlaceholder').style.display = 'flex';
+}
 
         function sendMessage() {
-            const input = document.getElementById('messageInput');
-            const message = input.value.trim();
-            
-            if (!message) return;
-            
-            const session = DEMO_DATA.chatSessions.find(s => s.id === currentChatId);
-            
-            if (session) {
-                // Add new message to session
-                session.messages.push({
-                    id: session.messages.length + 1,
-                    sender: 'admin',
-                    message: message,
-                    timestamp: new Date()
-                });
-                
-                // Update last message and timestamp
-                session.lastMessage = message;
-                session.timestamp = new Date();
-                
-                // Refresh chat messages and clear input
-                displayChatMessages(session.messages);
-                input.value = '';
-                
-                // Scroll to bottom
-                const container = document.getElementById('chatMessages');
-                container.scrollTop = container.scrollHeight;
-            }
+           
         }
 
         function handleMessageKeyPress(event) {
@@ -1210,32 +1166,6 @@
 
         // Start chat updates interval
         function startChatUpdates() {
-            if (chatUpdateInterval) clearInterval(chatUpdateInterval);
-            
-            chatUpdateInterval = setInterval(() => {
-                const session = DEMO_DATA.chatSessions.find(s => s.id === currentChatId);
-                
-                if (session) {
-                    // Simulate receiving a new message from the client
-                    const newMessage = {
-                        id: session.messages.length + 1,
-                        sender: 'client',
-                        message: 'This is a simulated response from the client.',
-                        timestamp: new Date()
-                    };
-                    
-                    session.messages.push(newMessage);
-                    session.lastMessage = newMessage.message;
-                    session.timestamp = new Date();
-                    
-                    // Refresh chat messages
-                    displayChatMessages(session.messages);
-                    
-                    // Scroll to bottom
-                    const container = document.getElementById('chatMessages');
-                    container.scrollTop = container.scrollHeight;
-                }
-            }, 5000); // Update every 5 seconds
         }
 
         // Stop chat updates interval
@@ -1248,6 +1178,8 @@
             showLogin();
         });
     </script>
+    <script src="/frontend.js"></script>
+
 </body>
 </html>
 
